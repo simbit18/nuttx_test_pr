@@ -70,7 +70,7 @@ jobs:
       DOCKER_BUILDKIT: 1
 
     strategy:
-      max-parallel: 12
+      max-parallel: 15
       matrix:
         boards:
          [
@@ -136,7 +136,7 @@ jobs:
     runs-on: macos-13
     needs: Fetch-Source
     strategy:
-      max-parallel: 2
+      max-parallel: 4
       matrix:
         boards: ["macos", "sim-01", "sim-02", "sim-03"]
     steps:
@@ -171,7 +171,7 @@ jobs:
           echo "::add-matcher::sources/nuttx/.github/gcc.json"
           export ARTIFACTDIR=`pwd`/buildartifacts
           cd sources/nuttx/tools/ci
-          ./cibuild.sh -i -c -A -N -R testlist/${{matrix.boards}}.dat
+          ./cibuild.sh -i -c -A -R -S testlist/${{matrix.boards}}.dat
 
       - uses: actions/upload-artifact@v4
         with:
@@ -240,7 +240,7 @@ jobs:
           git config --global --add safe.directory /github/workspace/sources/nuttx
           git config --global --add safe.directory /github/workspace/sources/apps
           cd sources/nuttx/tools/ci
-          ./cibuild.sh -g -i -A -C -N -R testlist/${{matrix.boards}}.dat
+          ./cibuild.sh -g -i -A -C -R testlist/${{matrix.boards}}.dat
 
       - uses: actions/upload-artifact@v4
         with:
