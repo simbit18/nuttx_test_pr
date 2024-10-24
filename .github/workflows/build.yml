@@ -136,7 +136,7 @@ jobs:
     runs-on: macos-13
     needs: Fetch-Source
     strategy:
-      max-parallel: 4
+      max-parallel: 3
       matrix:
         boards: ["macos", "sim-01", "sim-02", "sim-03"]
     steps:
@@ -247,3 +247,40 @@ jobs:
           name: msys2-${{matrix.boards}}-builds
           path: buildartifacts/
         continue-on-error: true
+
+  msvc:
+    needs: Fetch-Source
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Set up Python environment and install kconfiglib
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # specify the desired Python version
+      - name: Install kconfiglib
+        run: |
+          pip install kconfiglib
+      - run: git config --global core.autocrlf false
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Export NuttX Repo SHA
+       # run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+      - name: Run Builds
+        run: |
+          echo %PATH%
+          cd sources/nuttx
+          cmake -B vs2022 -DBOARD_CONFIG=sim/windows -G"Visual Studio 17 2022" -A Win32
+          cmake --build vs2022
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msvc-${{matrix.boards}}-builds
+          path: buildartifacts/
+        continue-on-error: true
+
