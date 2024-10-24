@@ -253,17 +253,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check cmake version
-        run: |
-          cmake --version
       # Set up Python environment and install kconfiglib
-      - uses: actions/setup-python@v5
+      - name: Set up Python and install kconfiglib
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # specify the desired Python version
+          python-version: '3.10'
       - name: Install kconfiglib
         run: |
           pip install kconfiglib
+
       - run: git config --global core.autocrlf false
+
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
         with:
@@ -271,13 +271,11 @@ jobs:
           path: .
 
       - name: Extract sources
-        run: tar zxf sources.tar.gz
+        run: tar zcf sources.tar.gz sources
 
-      - name: Export NuttX Repo SHA
-       # run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
-      - name: Run Builds
+      # Build the project using the given CMake commands
+      - name: Configure and build with CMake
         run: |
-          echo %PATH%
           cd sources/nuttx
           cmake -B vs2022 -DBOARD_CONFIG=sim/windows -G"Visual Studio 17 2022" -A Win32
           cmake --build vs2022
