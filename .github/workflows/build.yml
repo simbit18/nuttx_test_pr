@@ -253,6 +253,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check cmake version
+        run: |
+          cmake --version
       # Set up Python environment and install kconfiglib
       - uses: actions/setup-python@v5
         with:
