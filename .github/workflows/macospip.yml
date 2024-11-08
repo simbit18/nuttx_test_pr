@@ -40,9 +40,9 @@ jobs:
         run:  |
           pip list
           virtualenv test
-          mkdir -p /usr/local/venv
-          ls -a /usr/
-          python3 -m venv --system-site-packages /usr/local \
+          mkdir -p venv
+          ls -a
+          python3 -m venv --system-site-packages venv \
           && pip3 install --root-user-action=ignore --no-cache-dir \
              setuptools \
              wheel \
