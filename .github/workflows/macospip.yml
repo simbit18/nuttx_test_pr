@@ -39,7 +39,7 @@ jobs:
       - name: Create the virtual environment
         run:  |
           pip list
-          virtualenv test
+          # virtualenv test
           mkdir -p venv
           ls -a
           python3 -m venv --system-site-packages venv \
