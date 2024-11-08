@@ -60,3 +60,4 @@ jobs:
             pyelftools \
             cxxfilt \
             kconfiglib
+          ls -a venv
