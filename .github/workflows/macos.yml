@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx
-          ref: simbit18-20241031
+          repository: cuiziwei1/nuttx
+          ref: cuiziwei1:revert_flags
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -50,7 +50,7 @@ jobs:
       - name: Checkout apps repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx-apps
+          repository: apache/nuttx-apps
           ref: master
           path: sources/apps
           fetch-depth: 1
@@ -66,13 +66,13 @@ jobs:
   macOS:
     permissions:
       contents: none
-    runs-on: macos-14
+    runs-on: macos-13
     needs: Fetch-Source
     strategy:
       max-parallel: 3
       matrix:
         # boards: ["macos", "sim-01", "sim-02", "sim-03"]
-        boards: ["macos"]
+        boards: ["sim-01", "sim-02"]
     steps:
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
