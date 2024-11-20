@@ -74,6 +74,7 @@ jobs:
       DOCKER_BUILDKIT: 1
 
     strategy:
+      max-parallel: 18
       matrix:
         boards:
          [
@@ -138,7 +139,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         boards: ["arm-11", "arm-13", "msys2"]
 
