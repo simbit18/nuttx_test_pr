@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx
-          ref: simbit18-msys2-warning
+          ref: simbit18-FORCE-RESPONSE
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -53,7 +53,7 @@ jobs:
       - name: Checkout apps repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx-apps
+          repository: apache/nuttx-apps
           ref: master
           path: sources/apps
           fetch-depth: 1
@@ -128,7 +128,7 @@ jobs:
           git config --global --add safe.directory /github/workspace/sources/nuttx
           git config --global --add safe.directory /github/workspace/sources/apps
           cd sources/nuttx/tools/ci
-          ./cibuild.sh -g -i -A -C -R testlist/${{matrix.boards}}.dat
+          ./cibuild.sh -g -i -A -C -N -R testlist/${{matrix.boards}}.dat
 
       - uses: actions/upload-artifact@v4
         with:
