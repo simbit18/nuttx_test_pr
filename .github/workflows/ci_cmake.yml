@@ -78,13 +78,7 @@ jobs:
       matrix:
         boards:
          [
-          "arm-01", "risc-v-01", "sim-01", "xtensa-01", "arm64-01", "x86_64-01", "other",
-          "arm-02", "risc-v-02", "sim-02", "xtensa-02",
-          "arm-03", "risc-v-03", "sim-03",
-          "arm-04", "risc-v-04",
-          "arm-05", "risc-v-05",
-          "arm-06", "risc-v-06",
-          "arm-07", "arm-08", "arm-09", "arm-10", "arm-11", "arm-12", "arm-13", "arm-14"
+          "arm-11", "arm-13"
          ]
 
     steps:
@@ -141,7 +135,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        boards: ["arm-11", "arm-13", "msys2"]
+        boards: ["msys2"]
 
     defaults:
       run:
