@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx
-          ref: simbit18-macos14
+          ref: simbit18-darwin
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -63,7 +63,7 @@ jobs:
         with:
           name: source-bundle
           path: sources.tar.gz
-  macOS:
+  macOS14:
     permissions:
       contents: none
     runs-on: macos-14
@@ -72,7 +72,7 @@ jobs:
       max-parallel: 3
       matrix:
         # boards: ["macos", "sim-01", "sim-02", "sim-03"]
-        boards: ["macos"]
+        boards: ["macos", "xtensa-01", "xtensa-02"]
     steps:
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
