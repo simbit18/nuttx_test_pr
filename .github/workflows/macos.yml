@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: cuiziwei1/nuttx
-          ref: revert_flags
+          repository: apache/nuttx
+          ref: master
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -63,7 +63,7 @@ jobs:
         with:
           name: source-bundle
           path: sources.tar.gz
-  macOS:
+  macOS13:
     permissions:
       contents: none
     runs-on: macos-13
@@ -72,7 +72,7 @@ jobs:
       max-parallel: 3
       matrix:
         # boards: ["macos", "sim-01", "sim-02", "sim-03"]
-        boards: ["sim-01", "sim-02"]
+        boards: ["macos"]
     steps:
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
