@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: apache/nuttx
-          ref: master
+          repository: hujun260/nuttx
+          ref: apache_46 
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
