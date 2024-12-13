@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx
-          ref: simbit18-macos-dmg
+          repository: yamt/nuttx
+          ref: tools-macos
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -50,7 +50,7 @@ jobs:
       - name: Checkout apps repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx-apps
+          repository: apache/nuttx-apps
           ref: master
           path: sources/apps
           fetch-depth: 1
@@ -72,7 +72,7 @@ jobs:
       max-parallel: 3
       matrix:
         # boards: ["macos", "sim-01", "sim-02", "sim-03"]
-        boards: ["macos", "arm-08"]
+        boards: ["macos"]
     steps:
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
