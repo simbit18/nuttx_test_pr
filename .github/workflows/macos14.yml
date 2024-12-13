@@ -40,7 +40,7 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: yamt/nuttx
+          repository: yamt/incubator-nuttx
           ref: tools-macos
           path: sources/nuttx
           fetch-depth: 1
