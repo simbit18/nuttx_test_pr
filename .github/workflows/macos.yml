@@ -71,8 +71,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        # boards: ["macos", "sim-01", "sim-02", "sim-03"]
-        boards: ["macos", "sim-01"]
+        boards: ["macos", "sim-01", "sim-02", "sim-03"]
+        # boards: ["macos", "sim-01"]
     steps:
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
