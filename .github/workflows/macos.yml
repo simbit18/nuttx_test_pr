@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: raiden00pl/nuttx
-          ref: stm32_warnings
+          repository: W-M-R/nuttx
+          ref: mm_align
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
