@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: yamt/incubator-nuttx
-          ref: sim-macho-init-disable-chained-fixups
+          repository: cuiziweizw/nuttx
+          ref: macOS_libcxxabi
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -71,8 +71,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        # boards: ["macos", "sim-01", "sim-02", "sim-03"]
-        boards: ["macos"]
+        boards: ["macos", "sim-01", "sim-02", "sim-03"]
+        # boards: ["macos"]
     steps:
       - name: Download Source Artifact
         uses: actions/download-artifact@v4
