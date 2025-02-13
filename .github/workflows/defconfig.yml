@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx-apps
-          ref: simbit18-20250212
+          ref: simbit18-tag
           path: sources/apps
           fetch-depth: 1
 
