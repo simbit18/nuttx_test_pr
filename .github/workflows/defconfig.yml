@@ -103,7 +103,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
-            ./tools/configure.sh -l sim:rc
+            ./tools/configure.sh -l at32f437-mini:systemview
             make -j
 
       - uses: actions/upload-artifact@v4
@@ -153,7 +153,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
-            cmake -B build -DBOARD_CONFIG=sim:rc -GNinja
+            cmake -B build -DBOARD_CONFIG=at32f437-mini:systemview -GNinja
             cmake --build build
 
       - uses: actions/upload-artifact@v4
