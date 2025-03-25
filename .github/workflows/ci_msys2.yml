@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '.github/workflows/ci_windows.yml'
+      - '.github/workflows/ci_msys2.yml'
 
 permissions:
   contents: read
