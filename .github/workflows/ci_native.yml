@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx
-          ref: simbit18-ci-native
+          ref: simbit18-20250402
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
