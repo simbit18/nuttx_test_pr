@@ -50,8 +50,8 @@ jobs:
       - name: Checkout apps repo
         uses: actions/checkout@v4
         with:
-          repository: apache/nuttx-apps
-          ref: master
+          repository: simbit18/nuttx-apps
+          ref: simbit18-native
           path: sources/apps
           fetch-depth: 1
 
