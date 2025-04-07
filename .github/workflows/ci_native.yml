@@ -93,6 +93,10 @@ jobs:
 
       - name: Run Builds
         run: |
+          where.exe gcc
+          Copy-Item -Path C:\mingw64\bin\mingw32-make.exe -Destination C:\mingw64\bin\make.exe
+          where.exe mingw32-make
+          where.exe make
           git config --global --add safe.directory ${{github.workspace}}\sources\nuttx
           git config --global --add safe.directory ${{github.workspace}}\sources\apps
           "ARTIFACTDIR=${{github.workspace}}\sources\buildartifacts" >> $env:GITHUB_ENV
