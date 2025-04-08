@@ -92,8 +92,10 @@ jobs:
           7z x sources.tar -y
 
       - name: Run Builds
+        shell: pwsh
         run: |
           where.exe gcc
+          where.exe make
           Copy-Item -Path C:\mingw64\bin\mingw32-make.exe -Destination C:\mingw64\bin\make.exe
           where.exe mingw32-make
           where.exe make
