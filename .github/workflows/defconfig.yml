@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx
-          ref: simbit18-native
+          repository: roskuttan/nuttx
+          ref: master
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -50,8 +50,8 @@ jobs:
       - name: Checkout apps repo
         uses: actions/checkout@v4
         with:
-          repository: simbit18/nuttx-apps
-          ref: simbit18-native
+          repository: apache/nuttx-apps
+          ref: master
           path: sources/apps
           fetch-depth: 1
 
@@ -103,7 +103,8 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
-            ./tools/configure.sh -l at32f437-mini:systemview
+            #./tools/configure.sh -l at32f437-mini:systemview
+            ./tools/configure.sh -l raspberrypi-pico:nsh
             make -j
 
       - uses: actions/upload-artifact@v4
@@ -153,7 +154,8 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
-            cmake -B build -DBOARD_CONFIG=at32f437-mini:systemview -GNinja
+            # cmake -B build -DBOARD_CONFIG=at32f437-mini:systemview -GNinja
+            cmake -B build -DBOARD_CONFIG=raspberrypi-pico:nsh -GNinja
             cmake --build build
 
       - uses: actions/upload-artifact@v4
