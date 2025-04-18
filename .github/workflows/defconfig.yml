@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx
-          ref: simbit18-rp2040
+          ref: simbit18-tiva
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -104,7 +104,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             #./tools/configure.sh -l at32f437-mini:systemview
-            ./tools/configure.sh -l raspberrypi-pico:nsh
+            ./tools/configure.sh -l tm4c123g-launchpad:nsh
             make -j
 
       - uses: actions/upload-artifact@v4
@@ -155,7 +155,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             # cmake -B build -DBOARD_CONFIG=at32f437-mini:systemview -GNinja
-            cmake -B build -DBOARD_CONFIG=raspberrypi-pico:nsh -GNinja
+            cmake -B build -DBOARD_CONFIG=tm4c123g-launchpad:nsh -GNinja
             cmake --build build
 
       - uses: actions/upload-artifact@v4
