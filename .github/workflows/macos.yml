@@ -71,7 +71,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        boards: ["sim-02"]
+        boards: ["sim-01"]
         # boards: ["macos", "sim-01", "sim-02", "sim-03"]
         # boards: ["macos"]
     steps:
