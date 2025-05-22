@@ -104,7 +104,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             #./tools/configure.sh -l at32f437-mini:systemview
-            ./tools/configure.sh -l verdin-mx8mp:nsh
+            ./tools/configure.sh -l -S verdin-mx8mp:nsh
             make -j
 
       - uses: actions/upload-artifact@v4
