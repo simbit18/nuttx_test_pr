@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx
-          ref: simbit18-SAVEARTIFACTS
+          ref: simbit18-store
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -73,7 +73,7 @@ jobs:
       matrix:
         boards:
          [
-          "arm-03", "risc-v-01", "sim-02", "arm64-01", "x86_64-01", "other"
+          "arm-05"
          ]
 
     steps:
