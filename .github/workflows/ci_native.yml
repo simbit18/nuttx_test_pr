@@ -42,7 +42,7 @@ jobs:
         with:
           repository: simbit18/nuttx
           # ref: simbit18-20250402
-          ref: simbit18-msvc
+          ref: simbit18-fixerrorstream
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -52,7 +52,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simbit18/nuttx-apps
-          ref: simbit18-native
+          # ref: simbit18-native
+          ref: master
           path: sources/apps
           fetch-depth: 1
 
