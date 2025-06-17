@@ -42,7 +42,7 @@ jobs:
         with:
           repository: simbit18/nuttx
           # ref: simbit18-20250402
-          ref: simbit18-fixerrorstream
+          ref: simbit-fixerrorstream
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
