@@ -104,7 +104,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             #./tools/configure.sh -l at32f437-mini:systemview
-            ./tools/configure.sh -l nucleo-f446re:systemview
+            ./tools/configure.sh -l thingy91/nsh_rtt
             make -j
 
       - uses: actions/upload-artifact@v4
@@ -155,7 +155,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             # cmake -B build -DBOARD_CONFIG=at32f437-mini:systemview -GNinja
-            cmake -B build -DBOARD_CONFIG=nucleo-f446re:systemview -GNinja
+            cmake -B build -DBOARD_CONFIG=thingy91/nsh_rtt -GNinja
             cmake --build build
 
       - uses: actions/upload-artifact@v4
