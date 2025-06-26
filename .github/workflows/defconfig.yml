@@ -40,8 +40,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v4
         with:
-          repository: W-M-R/nuttx
-          ref: arm32-clang
+          repository: simbit18/nuttx
+          ref: simbit18-seggerversion
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -104,7 +104,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             #./tools/configure.sh -l at32f437-mini:systemview
-            ./tools/configure.sh -l -S mps3-an547:gcov
+            ./tools/configure.sh -l nucleo-f446re:systemview
             make -j
 
       - uses: actions/upload-artifact@v4
@@ -155,7 +155,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             # cmake -B build -DBOARD_CONFIG=at32f437-mini:systemview -GNinja
-            cmake -B build -DBOARD_CONFIG=mps3-an547:gcov -GNinja
+            cmake -B build -DBOARD_CONFIG=nucleo-f446re:systemview -GNinja
             cmake --build build
 
       - uses: actions/upload-artifact@v4
