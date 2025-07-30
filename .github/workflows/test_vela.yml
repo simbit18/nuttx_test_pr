@@ -102,8 +102,8 @@ jobs:
           mkdir nuttxspace
           ## ls -a
           cd nuttxspace
-          git clone https://github.com/apache/nuttx nuttx
-          git clone https://github.com/apache/nuttx-apps apps
+          git clone --depth 1 https://github.com/simbit18/nuttx.git nuttx
+          git clone --depth 1 https://github.com/simbit18/nuttx-apps.git apps
           ## cd nuttx
           ## ls -a
 
