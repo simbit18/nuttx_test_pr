@@ -133,7 +133,7 @@ jobs:
           kconfig-tweak --enable CONFIG_LIBCXX
           kconfig-tweak --enable CONFIG_LIBCXXABI
           kconfig-tweak --set-str CONFIG_LIBCXX_VERSION "17.0.6"
-           kconfig-tweak --set-str CONFIG_LIBCXXABI_VERSION "17.0.6"
+          kconfig-tweak --set-str CONFIG_LIBCXXABI_VERSION "17.0.6"
           kconfig-tweak --set-str CONFIG_CXX_STANDARD "gnu++20"
           kconfig-tweak --enable CONFIG_CXX_WCHAR
           kconfig-tweak --enable CONFIG_CXX_LOCALIZATION
