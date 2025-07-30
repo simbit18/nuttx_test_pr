@@ -263,7 +263,7 @@ jobs:
            rm -rf ${{ env.ARM_VELA_NAME }}
            # rm ${{ env.ARM_NAME }}.zip
            ls -a /opt/nuttxenv/usr
-ARM_VELA_URL
+
       - name: Create PATH environment arm support script
         run: |
            mkdir -p nuttxenv
