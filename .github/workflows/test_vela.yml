@@ -30,6 +30,8 @@ jobs:
             base-devel
             gcc
             gperf
+            automake
+            autoconf
             git
             python3
             ncurses-devel
@@ -41,7 +43,6 @@ jobs:
             ninja
             python-pip 
             vim
-            curl
 
       - name: pip3 install
         run: |
