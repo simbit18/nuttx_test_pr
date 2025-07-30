@@ -42,11 +42,11 @@ jobs:
             python-pip 
             vim
             curl
-        
+
       - name: pip3 install
         run: |
           echo 'pip3 install'
-          uname
+          python3 -m venv --system-site-packages /usr/local
           pip3 install --root-user-action=ignore --no-cache-dir pyelftools cxxfilt kconfiglib
 
       - name: Install kconfig-frontends
@@ -58,7 +58,7 @@ jobs:
           cd nuttx-tools/kconfig-frontends
           ./configure --prefix=/opt/nuttxenv/usr --enable-mconf --disable-gconf --disable-qconf --disable-shared --disable-nconf
           make install
-          
+
       - name: Install genromfs
         run: |
           echo 'Install genromfs'
@@ -86,14 +86,15 @@ jobs:
            rm -rf ${{ env.ARM_NAME }}
            rm ${{ env.ARM_NAME }}.zip
            ## ls -a /opt/nuttxenv/usr
-           
+
       - name: Create PATH environment arm support script
         run: |
            mkdir -p nuttxenv
            echo "#!/usr/bin/env bash" > nuttxenv/arm
            echo "PATH=/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
            echo "export PATH" >> nuttxenv/arm
-  
+
+      - run: git config --global core.autocrlf false
       - name: Checkout Source Files
         run: |
           echo 'Checkout Source Files'
@@ -116,12 +117,12 @@ jobs:
           ## ls -a
 
           ## Show the GCC version
-          arm-none-eabi-gcc --version
-          arm-none-eabi-c++ --version
-          
+          aarch64-none-elf-gcc --version
+          aarch64-none-elf-c++ --version
+
           ## Configure the build
           ./tools/configure.sh -g qemu-armv8a:nsh
-          
+
            ## Enable and set
           kconfig-tweak --enable CONFIG_LIBC_LOCALE
           kconfig-tweak --set-val CONFIG_TLS_NELEM 8
@@ -132,7 +133,7 @@ jobs:
           kconfig-tweak --enable CONFIG_CXX_WCHAR
           kconfig-tweak --enable CONFIG_CXX_LOCALIZATION
           kconfig-tweak --enable CONFIG_TESTING_CXXTEST
-          
+
           # CONFIG_LIBC_LOCALE=y
           # CONFIG_TLS_NELEM=8
           # CONFIG_TLS_TASK_NELEM=8
@@ -142,9 +143,9 @@ jobs:
           # CONFIG_CXX_WCHAR=y
           # CONFIG_CXX_LOCALIZATION=y
           # CONFIG_TESTING_CXXTEST=y
-          
+
           mkdir nuttxmsys2
-          
+
           ## Preserve the build config
           cp .config nuttxmsys2/nuttx.config
 
@@ -152,10 +153,10 @@ jobs:
           make
 
           ## Show the size
-          arm-none-eabi-size nuttx
-        
+          aarch64-none-elf-size nuttx
+
           ## Dump the disassembly to nuttx.S
-          arm-none-eabi-objdump \
+          aarch64-none-elf-objdump \
           -t -S --demangle --line-numbers --wide \
           nuttx \
           >nuttx.S \
