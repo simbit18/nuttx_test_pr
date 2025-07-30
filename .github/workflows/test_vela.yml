@@ -37,6 +37,7 @@ jobs:
             ncurses-devel
             unzip
             zip
+            xz
             tio
             zlib-devel
             cmake
