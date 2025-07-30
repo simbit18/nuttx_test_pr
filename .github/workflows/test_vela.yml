@@ -113,6 +113,7 @@ jobs:
         run: |
           echo 'Build'
           source nuttxenv/arm
+          export CROSSDEV=aarch64-none-elf-
           ## env
           
           ## Move to nuttx
@@ -288,6 +289,7 @@ jobs:
         run: |
           echo 'Build'
           source nuttxenv/arm
+          export CROSSDEV=aarch64-none-elf-
           ## env
           
           ## Move to nuttx
