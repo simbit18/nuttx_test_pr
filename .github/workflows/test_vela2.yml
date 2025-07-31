@@ -85,6 +85,7 @@ jobs:
            mkdir -p /opt/nuttxenv/usr
           
            cp -ar ${{ env.KCONFIG_FRONTENDS_NAME }}/* /opt/nuttxenv/usr
+           ls -a
            rm -rf ${{ env.KCONFIG_FRONTENDS_NAME }}
            rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            ## ls -a /opt/nuttxenv/usr
