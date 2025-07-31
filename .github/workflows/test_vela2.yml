@@ -16,6 +16,9 @@ env:
    KCONFIG_FRONTENDS_URL: https://github.com/simbit18/kconfig-frontends-windows-mingw64/releases/download/kconfig-frontends-dev-4.11.1/
    KCONFIG_FRONTENDS_NAME: kconfig-frontends-windows-dev-mingw64
    CP_KCONFIG_FRONTENDS_NAME: kconfig-frontends-windows-mingw64
+   GCC_URL: https://github.com/brechtsanders/winlibs_mingw/releases/download/15.1.0posix-13.0.0-msvcrt-r4/
+   GCC_NAME: winlibs-x86_64-posix-seh-gcc-15.1.0-mingw-w64msvcrt-13.0.0-r4
+   # https://github.com/brechtsanders/winlibs_mingw/releases/download/15.1.0posix-13.0.0-msvcrt-r4/winlibs-x86_64-posix-seh-gcc-15.1.0-mingw-w64msvcrt-13.0.0-r4.zip
 
 jobs:
   nuttx-arm-msys2:
@@ -91,12 +94,25 @@ jobs:
            rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            ls -a /opt/nuttxenv/usr
 
+      - name: Install GCC for Windows
+        run: |   
+           curl -L ${{ env.GCC_URL }}${{ env.GCC_NAME }}.zip -o ${{ env.GCC_NAME }}.zip
+           unzip -qo ${{ env.GCC_NAME }}.zip
+           mkdir -p /opt/nuttxenv/usr
+
+           cp -ar ${{ env.GCC_NAME }}/* /opt/nuttxenv/usr
+           mv /opt/nuttxenv/usr/mingw64/bin/mingw32-make.exe /opt/nuttxenv/usr/mingw64/bin/make.exe
+           mv /opt/nuttxenv/usr/mingw64/bin/cmake.exe /opt/nuttxenv/usr/mingw64/bin/123cmake.exe
+           rm -rf ${{ env.GCC_NAME }}
+           rm ${{ env.GCC_NAME }}.zip
+           ls -a /opt/nuttxenv/usr/mingw64/bin
+
       - name: Install arm toolchain for Windows
         run: |   
            curl -L ${{ env.ARM_URL }}${{ env.ARM_NAME }}.zip -o ${{ env.ARM_NAME }}.zip
            unzip -qo ${{ env.ARM_NAME }}.zip
            mkdir -p /opt/nuttxenv/usr
-          
+
            cp -ar ${{ env.ARM_NAME }}/* /opt/nuttxenv/usr
            rm -rf ${{ env.ARM_NAME }}
            rm ${{ env.ARM_NAME }}.zip
@@ -106,7 +122,7 @@ jobs:
         run: |
            mkdir -p nuttxenv
            echo "#!/usr/bin/env bash" > nuttxenv/arm
-           echo "PATH=/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
+           echo "PATH=/opt/nuttxenv/usr/mingw64/bin:/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
            echo "export PATH" >> nuttxenv/arm
 
       - run: git config --global core.autocrlf false
