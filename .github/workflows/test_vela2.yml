@@ -13,6 +13,8 @@ env:
    ARM_NAME: arm-gnu-toolchain-13.2.rel1-mingw-w64-i686-aarch64-none-elf #arm-gnu-toolchain-12.3.rel1-mingw-w64-i686-arm-none-eabi
    ARM_VELA_URL: https://github.com/open-vela/prebuilts_gcc_windows-x86_64_aarch64-none-elf.git
    ARM_VELA_NAME: armvela
+   KCONFIG_FRONTENDS_URL: https://github.com/simbit18/kconfig-frontends-windows-mingw64/releases/download/kconfig-frontends-4.11.0/
+   KCONFIG_FRONTENDS_NAME: kconfig-frontends-windows-mingw64
 
 jobs:
   nuttx-arm-msys2:
@@ -75,7 +77,18 @@ jobs:
           # cp /opt/nuttxenv/usr/bin/kconfig-tweak /usr/bin
           # cp /opt/nuttxenv/usr/bin/genromfs.exe /usr/bin
           # rm -rf nuttx-tools genromfs-0.5.2
+
+      - name: Install arm kconfig-frontends for Windows
+        run: |   
+           curl -L ${{ env.KCONFIG_FRONTENDS }}${{ env.KCONFIG_FRONTENDS_NAME }}.zip -o ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           unzip -qo ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           mkdir -p /opt/nuttxenv/usr
           
+           cp -ar ${{ env.KCONFIG_FRONTENDS_NAME }}/* /opt/nuttxenv/usr
+           rm -rf ${{ env.KCONFIG_FRONTENDS_NAME }}
+           rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           ## ls -a /opt/nuttxenv/usr
+
       - name: Install arm toolchain for Windows
         run: |   
            curl -L ${{ env.ARM_URL }}${{ env.ARM_NAME }}.zip -o ${{ env.ARM_NAME }}.zip
