@@ -15,6 +15,7 @@ env:
    ARM_VELA_NAME: armvela
    KCONFIG_FRONTENDS_URL: https://github.com/simbit18/kconfig-frontends-windows-mingw64/releases/download/kconfig-frontends-dev-4.11.1/
    KCONFIG_FRONTENDS_NAME: kconfig-frontends-windows-dev-mingw64
+   CP_KCONFIG_FRONTENDS_NAME: kconfig-frontends-windows-mingw64
 
 jobs:
   nuttx-arm-msys2:
@@ -84,9 +85,9 @@ jobs:
            unzip -qo ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            mkdir -p /opt/nuttxenv/usr
           
-           cp -ar ${{ env.KCONFIG_FRONTENDS_NAME }}/* /opt/nuttxenv/usr
+           cp -ar ${{ env.CP_KCONFIG_FRONTENDS_NAME }}/* /opt/nuttxenv/usr
            ls -a
-           rm -rf ${{ env.KCONFIG_FRONTENDS_NAME }}
+           rm -rf ${{ env.CP_KCONFIG_FRONTENDS_NAME }}
            rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            ls -a /opt/nuttxenv/usr
 
