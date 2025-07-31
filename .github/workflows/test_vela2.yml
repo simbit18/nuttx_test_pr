@@ -80,7 +80,7 @@ jobs:
 
       - name: Install arm kconfig-frontends for Windows
         run: |   
-           curl -L ${{ env.KCONFIG_FRONTENDS }}${{ env.KCONFIG_FRONTENDS_NAME }}.zip -o ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           curl -L ${{ env.KCONFIG_FRONTENDS_URL }}${{ env.KCONFIG_FRONTENDS_NAME }}.zip -o ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            unzip -qo ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            mkdir -p /opt/nuttxenv/usr
           
