@@ -100,10 +100,10 @@ jobs:
            unzip -qo ${{ env.GCC_NAME }}.zip
            mkdir -p /opt/nuttxenv/usr
 
-           cp -ar ${{ env.GCC_NAME }}/* /opt/nuttxenv/usr
+           cp -ar mingw64/* /opt/nuttxenv/usr
            mv /opt/nuttxenv/usr/mingw64/bin/mingw32-make.exe /opt/nuttxenv/usr/mingw64/bin/make.exe
            mv /opt/nuttxenv/usr/mingw64/bin/cmake.exe /opt/nuttxenv/usr/mingw64/bin/123cmake.exe
-           rm -rf ${{ env.GCC_NAME }}
+           rm -rf mingw64
            rm ${{ env.GCC_NAME }}.zip
            ls -a /opt/nuttxenv/usr/mingw64/bin
 
