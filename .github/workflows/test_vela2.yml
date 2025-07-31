@@ -82,17 +82,17 @@ jobs:
           # cp /opt/nuttxenv/usr/bin/genromfs.exe /usr/bin
           # rm -rf nuttx-tools genromfs-0.5.2
 
-      - name: Install arm kconfig-frontends for Windows
-        run: |   
-           curl -L ${{ env.KCONFIG_FRONTENDS_URL }}${{ env.KCONFIG_FRONTENDS_NAME }}.zip -o ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
-           unzip -qo ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
-           mkdir -p /opt/nuttxenv/usr
+      # - name: Install arm kconfig-frontends for Windows
+        # run: |   
+           # curl -L ${{ env.KCONFIG_FRONTENDS_URL }}${{ env.KCONFIG_FRONTENDS_NAME }}.zip -o ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           # unzip -qo ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           # mkdir -p /opt/nuttxenv/usr
           
-           cp -ar ${{ env.CP_KCONFIG_FRONTENDS_NAME }}/* /opt/nuttxenv/usr
-           ls -a
-           rm -rf ${{ env.CP_KCONFIG_FRONTENDS_NAME }}
-           rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
-           ls -a /opt/nuttxenv/usr
+           # cp -ar ${{ env.CP_KCONFIG_FRONTENDS_NAME }}/* /opt/nuttxenv/usr
+           # ls -a
+           # rm -rf ${{ env.CP_KCONFIG_FRONTENDS_NAME }}
+           # rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
+           # ls -a /opt/nuttxenv/usr
 
       - name: Install GCC for Windows
         run: |   
@@ -124,6 +124,16 @@ jobs:
            echo "#!/usr/bin/env bash" > nuttxenv/arm
            echo "PATH=/opt/nuttxenv/usr/mingw64/bin:/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
            echo "export PATH" >> nuttxenv/arm
+
+      - name: Install kconfig-frontends
+        run: |
+          echo 'Install kconfig-frontends'
+          curl -L https://bitbucket.org/nuttx/tools/get/master.tar.gz -o nuttx-tools.tar.gz
+          mkdir nuttx-tools
+          tar xvzf nuttx-tools.tar.gz --strip-components=1 -C nuttx-tools
+          cd nuttx-tools/kconfig-frontends
+          ./configure --prefix=/opt/nuttxenv/usr --enable-mconf --disable-gconf --disable-qconf --disable-shared --disable-nconf
+          make install
 
       - run: git config --global core.autocrlf false
       - name: Checkout Source Files
