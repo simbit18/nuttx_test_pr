@@ -98,9 +98,9 @@ jobs:
         run: |   
            curl -L ${{ env.GCC_URL }}${{ env.GCC_NAME }}.zip -o ${{ env.GCC_NAME }}.zip
            unzip -qo ${{ env.GCC_NAME }}.zip
-           mkdir -p /opt/nuttxenv/usr
+           mkdir -p /opt/nuttxenv/usr/mingw64
 
-           cp -ar mingw64/* /opt/nuttxenv/usr
+           cp -ar mingw64/* /opt/nuttxenv/usr/mingw64
            mv /opt/nuttxenv/usr/mingw64/bin/mingw32-make.exe /opt/nuttxenv/usr/mingw64/bin/make.exe
            mv /opt/nuttxenv/usr/mingw64/bin/cmake.exe /opt/nuttxenv/usr/mingw64/bin/123cmake.exe
            rm -rf mingw64
