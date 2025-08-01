@@ -19,7 +19,8 @@ on:
       - '.github/workflows/defconfig_pr.yml'
 env:
    REPO_NUTTX_NAME: simbit18/nuttx
-   REF_NUTTX_NAME: simbit18-imxrt
+   # REF_NUTTX_NAME: simbit18-imxrt
+   REF_NUTTX_NAME: master
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    BOARD_CONFIG_NAME: arcx-socket-grid:nsh
