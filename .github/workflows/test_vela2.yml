@@ -34,6 +34,7 @@ jobs:
           update: false
           install: >-
             base-devel
+            gcc
             gperf
             automake
             autoconf
@@ -55,15 +56,15 @@ jobs:
           python3 -m venv --system-site-packages /usr/local
           pip3 install --root-user-action=ignore --no-cache-dir pyelftools cxxfilt kconfiglib
 
-      # - name: Install kconfig-frontends
-        # run: |
-          # echo 'Install kconfig-frontends'
-          # curl -L https://bitbucket.org/nuttx/tools/get/master.tar.gz -o nuttx-tools.tar.gz
-          # mkdir nuttx-tools
-          # tar xvzf nuttx-tools.tar.gz --strip-components=1 -C nuttx-tools
-          # cd nuttx-tools/kconfig-frontends
-          # ./configure --prefix=/opt/nuttxenv/usr --enable-mconf --disable-gconf --disable-qconf --disable-shared --disable-nconf
-          # make install
+      - name: Install kconfig-frontends
+        run: |
+          echo 'Install kconfig-frontends'
+          curl -L https://bitbucket.org/nuttx/tools/get/master.tar.gz -o nuttx-tools.tar.gz
+          mkdir nuttx-tools
+          tar xvzf nuttx-tools.tar.gz --strip-components=1 -C nuttx-tools
+          cd nuttx-tools/kconfig-frontends
+          ./configure --prefix=/opt/nuttxenv/usr --enable-mconf --disable-gconf --disable-qconf --disable-shared --disable-nconf
+          make install
 
       # - name: Install genromfs
         # run: |
@@ -94,18 +95,18 @@ jobs:
            # rm ${{ env.KCONFIG_FRONTENDS_NAME }}.zip
            # ls -a /opt/nuttxenv/usr
 
-      - name: Install GCC for Windows
-        run: |   
-           curl -L ${{ env.GCC_URL }}${{ env.GCC_NAME }}.zip -o ${{ env.GCC_NAME }}.zip
-           unzip -qo ${{ env.GCC_NAME }}.zip
-           mkdir -p /opt/nuttxenv/usr/mingw64
+      # - name: Install GCC for Windows
+        # run: |   
+           # curl -L ${{ env.GCC_URL }}${{ env.GCC_NAME }}.zip -o ${{ env.GCC_NAME }}.zip
+           # unzip -qo ${{ env.GCC_NAME }}.zip
+           # mkdir -p /opt/nuttxenv/usr/mingw64
 
-           cp -ar mingw64/* /opt/nuttxenv/usr/mingw64
-           mv /opt/nuttxenv/usr/mingw64/bin/mingw32-make.exe /opt/nuttxenv/usr/mingw64/bin/make.exe
-           mv /opt/nuttxenv/usr/mingw64/bin/cmake.exe /opt/nuttxenv/usr/mingw64/bin/123cmake.exe
-           rm -rf mingw64
-           rm ${{ env.GCC_NAME }}.zip
-           ls -a /opt/nuttxenv/usr/mingw64/bin
+           # cp -ar mingw64/* /opt/nuttxenv/usr/mingw64
+           # mv /opt/nuttxenv/usr/mingw64/bin/mingw32-make.exe /opt/nuttxenv/usr/mingw64/bin/make.exe
+           # mv /opt/nuttxenv/usr/mingw64/bin/cmake.exe /opt/nuttxenv/usr/mingw64/bin/123cmake.exe
+           # rm -rf mingw64
+           # rm ${{ env.GCC_NAME }}.zip
+           # ls -a /opt/nuttxenv/usr/mingw64/bin
 
       - name: Install arm toolchain for Windows
         run: |   
@@ -122,18 +123,19 @@ jobs:
         run: |
            mkdir -p nuttxenv
            echo "#!/usr/bin/env bash" > nuttxenv/arm
-           echo "PATH=/opt/nuttxenv/usr/mingw64/bin:/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
+           # echo "PATH=/opt/nuttxenv/usr/mingw64/bin:/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
+           echo "PATH=/opt/nuttxenv/usr/bin:"'${PATH}' >> nuttxenv/arm
            echo "export PATH" >> nuttxenv/arm
 
-      - name: Install kconfig-frontends
-        run: |
-          echo 'Install kconfig-frontends'
-          curl -L https://bitbucket.org/nuttx/tools/get/master.tar.gz -o nuttx-tools.tar.gz
-          mkdir nuttx-tools
-          tar xvzf nuttx-tools.tar.gz --strip-components=1 -C nuttx-tools
-          cd nuttx-tools/kconfig-frontends
-          ./configure --prefix=/opt/nuttxenv/usr --enable-mconf --disable-gconf --disable-qconf --disable-shared --disable-nconf
-          make install
+      # - name: Install kconfig-frontends
+        # run: |
+          # echo 'Install kconfig-frontends'
+          # curl -L https://bitbucket.org/nuttx/tools/get/master.tar.gz -o nuttx-tools.tar.gz
+          # mkdir nuttx-tools
+          # tar xvzf nuttx-tools.tar.gz --strip-components=1 -C nuttx-tools
+          # cd nuttx-tools/kconfig-frontends
+          # ./configure --prefix=/opt/nuttxenv/usr --enable-mconf --disable-gconf --disable-qconf --disable-shared --disable-nconf
+          # make install
 
       - run: git config --global core.autocrlf false
       - name: Checkout Source Files
@@ -167,6 +169,9 @@ jobs:
           ./tools/configure.sh -g qemu-armv8a:nsh
 
            ## Enable and set
+          kconfig-tweak --enable CONFIG_PTHREAD_MUTEX_TYPES
+          kconfig-tweak --disable CONFIG_LIBCXXMINI
+
           kconfig-tweak --enable CONFIG_LIBC_LOCALE
           kconfig-tweak --set-val CONFIG_TLS_NELEM 8
           kconfig-tweak --set-val CONFIG_TLS_TASK_NELEM 8
@@ -343,6 +348,9 @@ jobs:
           ./tools/configure.sh -g qemu-armv8a:nsh
 
            ## Enable and set
+          kconfig-tweak --enable CONFIG_PTHREAD_MUTEX_TYPES
+          kconfig-tweak --disable CONFIG_LIBCXXMINI
+
           kconfig-tweak --enable CONFIG_LIBC_LOCALE
           kconfig-tweak --set-val CONFIG_TLS_NELEM 8
           kconfig-tweak --set-val CONFIG_TLS_TASK_NELEM 8
