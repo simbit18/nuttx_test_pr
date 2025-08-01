@@ -379,7 +379,7 @@ jobs:
           cp .config nuttxmsys2/nuttx.config
 
           ## Run the build
-          make
+          make -j
 
           ## Show the size
           aarch64-none-elf-size nuttx
