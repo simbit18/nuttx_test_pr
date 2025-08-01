@@ -145,7 +145,7 @@ jobs:
           ## ls -a
           cd nuttxspace
           # git clone --depth 1 https://github.com/simbit18/nuttx.git nuttx
-          git clone --depth 1 https://github.com/zhangshanmin/nuttx.git nuttx
+          git clone --depth 1 https://github.com/apache/nuttx.git nuttx
           git clone --depth 1 https://github.com/apache/nuttx-apps.git apps
           ## cd nuttx
           ## ls -a
@@ -200,7 +200,7 @@ jobs:
           cp .config nuttxmsys2/nuttx.config
 
           ## Run the build
-          make
+          make -j
 
           ## Show the size
           aarch64-none-elf-size nuttx
@@ -324,7 +324,7 @@ jobs:
           ## ls -a
           cd nuttxspace
           # git clone --depth 1 https://github.com/simbit18/nuttx.git nuttx
-          git clone --depth 1 https://github.com/zhangshanmin/nuttx.git nuttx
+          git clone --depth 1 https://github.com/apache/nuttx.git nuttx
           git clone --depth 1 https://github.com/apache/nuttx-apps.git apps
           ## cd nuttx
           ## ls -a
