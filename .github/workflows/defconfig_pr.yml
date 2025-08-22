@@ -20,10 +20,10 @@ on:
 env:
    REPO_NUTTX_NAME: simbit18/nuttx
    # REF_NUTTX_NAME: simbit18-imxrt
-   REF_NUTTX_NAME: master
+   REF_NUTTX_NAME: simbit18-rp2040
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
-   BOARD_CONFIG_NAME: arcx-socket-grid:nsh
+   BOARD_CONFIG_NAME: raspberrypi-pico:nsh
 
 permissions:
   contents: read
