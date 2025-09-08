@@ -24,7 +24,7 @@ env:
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    # BOARD_CONFIG_NAME: raspberrypi-pico:nsh
-   BOARD_CONFIG_NAME: teensy-4.1:nsh
+   BOARD_CONFIG_NAME: teensy-4.x:nsh-4.1
 
 permissions:
   contents: read
