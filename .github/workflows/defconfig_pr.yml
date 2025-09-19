@@ -26,7 +26,7 @@ env:
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    # BOARD_CONFIG_NAME: raspberrypi-pico:nsh
-   BOARD_CONFIG_NAME: raspberrypi-pico:bmp280
+   BOARD_CONFIG_NAME: pimoroni-tiny2040:gpio
 
 permissions:
   contents: read
