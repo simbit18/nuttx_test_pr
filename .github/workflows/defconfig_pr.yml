@@ -19,7 +19,7 @@ on:
       - '.github/workflows/defconfig_pr.yml'
 env:
    REPO_NUTTX_NAME: simbit18/nuttx
-   REF_NUTTX_NAME: simbit18-pimoroni
+   REF_NUTTX_NAME: simbit18-arc-rp2040
    # REPO_NUTTX_NAME: apache/nuttx
    # REF_NUTTX_NAME: master
    # REF_NUTTX_NAME: simbit18-rp2040
