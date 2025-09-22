@@ -19,7 +19,7 @@ on:
       - '.github/workflows/defconfig_pr.yml'
 env:
    REPO_NUTTX_NAME: simbit18/nuttx
-   REF_NUTTX_NAME: simbit18-arc_rp2040
+   REF_NUTTX_NAME: simbit18-pimoroni
    # REPO_NUTTX_NAME: apache/nuttx
    # REF_NUTTX_NAME: master
    # REF_NUTTX_NAME: simbit18-rp2040
@@ -48,7 +48,7 @@ jobs:
           REF="refs/heads/master"
           echo "Working with ref: $REF"
       - name: Checkout nuttx repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.REPO_NUTTX_NAME }}
           ref: ${{ env.REF_NUTTX_NAME }}
@@ -58,7 +58,7 @@ jobs:
         run: git -C sources/nuttx fetch --tags
 
       - name: Checkout apps repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.REPO_APPS_NAME }}
           ref: ${{ env.REF_APPS_NAME }}
