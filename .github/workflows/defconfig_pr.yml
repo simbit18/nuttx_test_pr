@@ -19,13 +19,13 @@ on:
       - '.github/workflows/defconfig_pr.yml'
 env:
    REPO_NUTTX_NAME: simbit18/nuttx
-   REF_NUTTX_NAME: simbit-rp23xx
+   REF_NUTTX_NAME: simbit-pimoroni
    # REPO_NUTTX_NAME: apache/nuttx
    # REF_NUTTX_NAME: master
    # REF_NUTTX_NAME: simbit18-rp2040
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
-   BOARD_CONFIG_NAME: raspberrypi-pico-2:nsh
+   BOARD_CONFIG_NAME: pimoroni-pico-2-plus:nsh
    # BOARD_CONFIG_NAME: pimoroni-tiny2040:gpio
 
 permissions:
