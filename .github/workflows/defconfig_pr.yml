@@ -25,7 +25,7 @@ env:
    # REF_NUTTX_NAME: simbit18-rp2040
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
-   BOARD_CONFIG_NAME: pimoroni-pico-2-plus:composite
+   BOARD_CONFIG_NAME: pimoroni-pico-2-plus:usbmsc
    # BOARD_CONFIG_NAME: pimoroni-tiny2040:gpio
 
 permissions:
