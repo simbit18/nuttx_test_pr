@@ -27,7 +27,8 @@ env:
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    #BOARD_CONFIG_NAME: sim:nsh
-   BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
+   # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
+   BOARD_CONFIG_NAME: xiao-rp2350:nsh
 
 permissions:
   contents: read
