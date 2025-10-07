@@ -27,7 +27,7 @@ env:
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    #BOARD_CONFIG_NAME: sim:nsh
-   # BOARD_CONFIG_NAME: pimoroni-tiny2040:gpio
+   BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
 
 permissions:
   contents: read
