@@ -41,17 +41,17 @@ jobs:
           REF="refs/heads/master"
           echo "Working with ref: $REF"
       - name: Checkout nuttx repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
-          repository: zhangshanmin/nuttx
-          ref: shanmin-dev
+          repository: JianyuWang0623/nuttx
+          ref: ystem_init_doc_config
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
         run: git -C sources/nuttx fetch --tags
 
       - name: Checkout apps repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: apache/nuttx-apps
           ref: master
@@ -80,7 +80,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MSYS
@@ -103,6 +103,7 @@ jobs:
             ninja
             python-pip 
             vim
+            genromfs
 
       - name: pip3 install
         run: |
