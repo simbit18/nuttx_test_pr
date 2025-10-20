@@ -28,7 +28,8 @@ env:
    REF_APPS_NAME: master
    #BOARD_CONFIG_NAME: sim:nsh
    # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
-   BOARD_CONFIG_NAME: mcu123-lpc214x:nsh
+   BOARD_CONFIG_NAME: raspberrypi-pico:bmp280
+   COMMIT_HASH: 898b6a9bb9ea6fef0a3746b1c9f3d3d6143fdb5e
 
 permissions:
   contents: read
@@ -80,6 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: 1
+      GH_JOB_NAME: ${{ github.job }}
 
     steps:
       - name: Download Source Artifact
@@ -110,19 +112,25 @@ jobs:
           BLOBDIR: /tools/blobs
         with:
           run: |
+            echo "Job: ${{ env.GH_JOB_NAME }}"
             echo "::add-matcher::sources/nuttx/.github/gcc.json"
             export ARTIFACTDIR=`pwd`/buildartifacts
+            echo "ARTIFACTDIR: $ARTIFACTDIR"
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             #./tools/configure.sh -l at32f437-mini:systemview
             ./tools/configure.sh -l ${{ env.BOARD_CONFIG_NAME }}
             make -j
+            artifactconfigdir=$ARTIFACTDIR/$(echo ${{ env.BOARD_CONFIG_NAME }} | sed "s/:/\//")/
+            echo "artifactconfigdir: $artifactconfigdir"
+            mkdir -p $artifactconfigdir
+            xargs -I "{}" cp "{}" $artifactconfigdir < nuttx.manifest
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: linux-make-builds
+          name: linux-${{ github.job }}-builds
           path: buildartifacts/
         continue-on-error: true
 
@@ -131,6 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: 1
+      GH_JOB_NAME: ${{ github.job }}
 
     steps:
       - name: Download Source Artifact
@@ -161,6 +170,8 @@ jobs:
           BLOBDIR: /tools/blobs
         with:
           run: |
+            echo "Job: ${{ env.GH_JOB_NAME }}"
+            echo "Job2: ${{ github.job }}"
             echo "::add-matcher::sources/nuttx/.github/gcc.json"
             export ARTIFACTDIR=`pwd`/buildartifacts
             git config --global --add safe.directory /github/workspace/sources/nuttx
@@ -170,10 +181,15 @@ jobs:
             # cmake -B build -DBOARD_CONFIG=thingy91/nsh_rtt -GNinja
             cmake -B build -DBOARD_CONFIG=${{ env.BOARD_CONFIG_NAME }} -GNinja
             cmake --build build
+            artifactconfigdir=$ARTIFACTDIR/$(echo ${{ env.BOARD_CONFIG_NAME }} | sed "s/:/\//")/
+            echo "artifactconfigdir: $artifactconfigdir"
+            mkdir -p $artifactconfigdir
+            cd build
+            xargs -I "{}" cp "{}" $artifactconfigdir < /github/workspace/sources/nuttx/build/nuttx.manifest
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: linux-cmake-builds
+          name: linux-${{ github.job }}-builds
           path: buildartifacts/
         continue-on-error: true
