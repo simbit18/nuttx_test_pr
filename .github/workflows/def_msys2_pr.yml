@@ -1,0 +1,212 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: Build msys2 make and cmake PR
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/def_msys2_pr.yml'
+env:
+   #REPO_NUTTX_NAME: simbit18/nuttx
+   #REPO_NUTTX_NAME: apache/nuttx
+   #REF_NUTTX_NAME: master
+   # REF_NUTTX_NAME: simbit18-memory-02
+   # REPO_NUTTX_NAME: apache/nuttx
+   REPO_NUTTX_NAME: JianyuWang0623/nuttx
+   REF_NUTTX_NAME: system_init_doc_config
+   REPO_APPS_NAME: apache/nuttx-apps
+   REF_APPS_NAME: master
+   #BOARD_CONFIG_NAME: sim:nsh
+   # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
+   BOARD_CONFIG_NAME: mcu123-lpc214x:nsh
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Fetch-Source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine Target Branches
+        id: gittargets
+        shell: bash
+        run: |
+          OS_REF=""
+          APPS_REF=""
+          REF="refs/heads/master"
+          echo "Working with ref: $REF"
+      - name: Checkout nuttx repo
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.REPO_NUTTX_NAME }}
+          ref: ${{ env.REF_NUTTX_NAME }}
+          path: sources/nuttx
+          fetch-depth: 1
+      - name: Checkout nuttx repo tags
+        run: git -C sources/nuttx fetch --tags
+
+      - name: Checkout apps repo
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.REPO_APPS_NAME }}
+          ref: ${{ env.REF_APPS_NAME }}
+          path: sources/apps
+          fetch-depth: 1
+
+      - name: Tar sources
+        run: tar zcf sources.tar.gz sources
+
+      - name: Archive Source Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-bundle
+          path: sources.tar.gz
+
+  MSYS2Make:
+    needs: Fetch-Source
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        boards: [msys2]
+
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: false
+          cache: false
+          install: >-
+            base-devel
+            gcc
+            gperf
+            automake
+            autoconf
+            git
+            python3
+            ncurses-devel
+            unzip
+            zip
+            tio
+            zlib-devel
+            cmake
+            ninja
+            python-pip 
+            vim
+            genromfs
+
+      - name: pip3 install
+        run: |
+          python3 -m venv --system-site-packages /usr/local
+          pip3 install --root-user-action=ignore --no-cache-dir pyelftools cxxfilt kconfiglib
+      - run: git config --global core.autocrlf false
+
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Export NuttX Repo SHA
+        run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+
+      - name: Run Builds
+        run: |
+          echo "::add-matcher::sources/nuttx/.github/gcc.json"
+          export ARTIFACTDIR=`pwd`/buildartifacts
+          git config --global --add safe.directory /github/workspace/sources/nuttx
+          git config --global --add safe.directory /github/workspace/sources/apps
+          cd sources/nuttx
+          #./tools/configure.sh -l at32f437-mini:systemview
+          ./tools/configure.sh -g ${{ env.BOARD_CONFIG_NAME }}
+          make -j 4
+
+  MSYS2CMake:
+    needs: Fetch-Source
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        boards: [msys2]
+
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: false
+          cache: false
+          install: >-
+            base-devel
+            gcc
+            gperf
+            automake
+            autoconf
+            git
+            python3
+            ncurses-devel
+            unzip
+            zip
+            tio
+            zlib-devel
+            cmake
+            ninja
+            python-pip 
+            vim
+            genromfs
+
+      - name: pip3 install
+        run: |
+          python3 -m venv --system-site-packages /usr/local
+          pip3 install --root-user-action=ignore --no-cache-dir pyelftools cxxfilt kconfiglib
+      - run: git config --global core.autocrlf false
+
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Export NuttX Repo SHA
+        run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+
+      - name: Run Builds
+        run: |
+          echo "::add-matcher::sources/nuttx/.github/gcc.json"
+          export ARTIFACTDIR=`pwd`/buildartifacts
+          git config --global --add safe.directory /github/workspace/sources/nuttx
+          git config --global --add safe.directory /github/workspace/sources/apps
+          cd sources/nuttx
+          #./tools/configure.sh -l at32f437-mini:systemview
+          cmake -B build -DBOARD_CONFIG=${{ env.BOARD_CONFIG_NAME }} -GNinja
+          cmake --build build
