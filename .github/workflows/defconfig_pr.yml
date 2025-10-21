@@ -119,7 +119,8 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
-            #./tools/configure.sh -l at32f437-mini:systemview
+            # commit hash
+            git checkout ${{ env.COMMIT_HASH }}
             ./tools/configure.sh -l ${{ env.BOARD_CONFIG_NAME }}
             make -j
             artifactconfigdir=$ARTIFACTDIR/$(echo ${{ env.BOARD_CONFIG_NAME }} | sed "s/:/\//")/
@@ -174,6 +175,7 @@ jobs:
             echo "Job2: ${{ github.job }}"
             echo "::add-matcher::sources/nuttx/.github/gcc.json"
             export ARTIFACTDIR=`pwd`/buildartifacts
+            sourceworkspace=/github/workspace/sources
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
@@ -185,7 +187,7 @@ jobs:
             echo "artifactconfigdir: $artifactconfigdir"
             mkdir -p $artifactconfigdir
             cd build
-            xargs -I "{}" cp "{}" $artifactconfigdir < /github/workspace/sources/nuttx/build/nuttx.manifest
+            xargs -I "{}" cp "{}" $artifactconfigdir < $sourceworkspace/nuttx/build/nuttx.manifest
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
