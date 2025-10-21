@@ -120,7 +120,7 @@ jobs:
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx
             # commit hash
-            git checkout ${{ env.COMMIT_HASH }}
+            # git checkout ${{ env.COMMIT_HASH }}
             ./tools/configure.sh -l ${{ env.BOARD_CONFIG_NAME }}
             make -j
             artifactconfigdir=$ARTIFACTDIR/$(echo ${{ env.BOARD_CONFIG_NAME }} | sed "s/:/\//")/
