@@ -122,7 +122,8 @@ jobs:
             # commit hash
             # git checkout ${{ env.COMMIT_HASH }}
             ./tools/configure.sh -l ${{ env.BOARD_CONFIG_NAME }}
-            make -j
+            # make -j
+            make V=1
             artifactconfigdir=$ARTIFACTDIR/$(echo ${{ env.BOARD_CONFIG_NAME }} | sed "s/:/\//")/
             echo "artifactconfigdir: $artifactconfigdir"
             mkdir -p $artifactconfigdir
