@@ -29,7 +29,7 @@ env:
    REF_APPS_NAME: master
    #BOARD_CONFIG_NAME: sim:nsh
    # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
-   BOARD_CONFIG_NAME: esp32-c3-zero:nsh
+   BOARD_CONFIG_NAME: esp32-c3-zero:usbnsh
    # COMMIT_HASH: 898b6a9bb9ea6fef0a3746b1c9f3d3d6143fdb5e
 
 permissions:
