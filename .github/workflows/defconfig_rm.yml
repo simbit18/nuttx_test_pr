@@ -154,7 +154,6 @@ jobs:
       - name: Detailed file sizes
         run: find / -type f -exec du -h {} + 2>/dev/null | sort -hr | head -n 1000
 
-    steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
