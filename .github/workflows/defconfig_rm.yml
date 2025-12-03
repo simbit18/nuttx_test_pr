@@ -156,8 +156,8 @@ jobs:
 
       - name: Cleanup
         run: |
-        # Remove Swift toolchain
-        sudo rm -rf /usr/share/swift
+        # Remove mysql
+        sudo apt-get remove -y '^mysql-.*' --fix-missing || echo "::warning::The command [sudo apt-get remove -y '^mysql-.*' --fix-missing] failed to complete successfully. Proceeding..."
 
       - name: Download Source Artifact
         uses: actions/download-artifact@v6
