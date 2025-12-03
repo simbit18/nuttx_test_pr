@@ -154,11 +154,30 @@ jobs:
       - name: Detailed file sizes
         run: find / -type f -exec du -h {} + 2>/dev/null | sort -hr | head -n 1000
 
-      - name: Cleanup
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v6
-        run: |
+
+      - name: Free Disk Space (Ubuntu)
+        uses: ./.github/actions/free-disk-space
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: false
+          
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: false
+          haskell: false
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+      # - name: Cleanup
+      #  uses: actions/checkout@v6
+      #  run: |
         # Remove mysql
-        sudo apt-get remove -y '^mysql-.*' --fix-missing || echo "::warning::The command [sudo apt-get remove -y '^mysql-.*' --fix-missing] failed to complete successfully. Proceeding..."
+      #  sudo apt-get remove -y '^mysql-.*' --fix-missing || echo "::warning::The command [sudo apt-get remove -y '^mysql-.*' --fix-missing] failed to complete successfully. Proceeding..."
 
       - name: Download Source Artifact
         uses: actions/download-artifact@v6
