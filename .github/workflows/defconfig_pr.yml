@@ -25,7 +25,7 @@ env:
    # REPO_NUTTX_NAME: wangchdo/nuttx
    # REF_NUTTX_NAME: fix_clock_init
    # REF_NUTTX_NAME: add-missing-libcxxtoolchain-support
-   REF_NUTTX_NAME: fix-protected-build
+   REF_NUTTX_NAME: feature/fix-protected-build
    # REPO_NUTTX_NAME: apache/nuttx
    # REF_NUTTX_NAME: simbit18-rp2040
    REPO_APPS_NAME: apache/nuttx-apps
