@@ -1,0 +1,124 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: Build macos-15-intel
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/macos15.yml'
+env:
+   # REPO_NUTTX_NAME: apache/nuttx
+   # REF_NUTTX_NAME: master
+   REPO_NUTTX_NAME: aditya0yadav/nuttx
+   REF_NUTTX_NAME: master
+   REPO_APPS_NAME: apache/nuttx-apps
+   REF_APPS_NAME: master
+   # BOARD_CONFIG_NAME: stm32f4discovery:kostest
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Fetch-Source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine Target Branches
+        id: gittargets
+        shell: bash
+        run: |
+          OS_REF=""
+          APPS_REF=""
+          REF="refs/heads/master"
+          echo "Working with ref: $REF"
+      - name: Checkout nuttx repo
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.REPO_NUTTX_NAME }}
+          ref: ${{ env.REF_NUTTX_NAME }}
+          path: sources/nuttx
+          fetch-depth: 1
+      - name: Checkout nuttx repo tags
+        run: git -C sources/nuttx fetch --tags
+
+      - name: Checkout apps repo
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.REPO_APPS_NAME }}
+          ref: ${{ env.REF_APPS_NAME }}
+          path: sources/apps
+          fetch-depth: 1
+
+      - name: Tar sources
+        run: tar zcf sources.tar.gz sources
+
+      - name: Archive Source Bundle
+        uses: actions/upload-artifact@v6
+        with:
+          name: source-bundle
+          path: sources.tar.gz
+  macOS14:
+    permissions:
+      contents: none
+    runs-on: macos-15-intel
+    needs: Fetch-Source
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        boards: ["macos", "sim-01", "sim-02", "sim-03"]
+        # boards: ["macos"]
+    steps:
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Restore Tools Cache
+        id: cache-tools
+        uses: actions/cache@v5
+        env:
+          cache-name: ${{ runner.os }}-cache-tools
+        with:
+          path: ./sources/tools
+          key: ${{ runner.os }}-tools-${{ hashFiles('./sources/nuttx/tools/ci/platforms/darwin.sh') }}
+
+      - name: Export NuttX Repo SHA
+        run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+
+      # Released version of Cython has issues with Python 11. Set runner to use Python 3.10
+      # https://github.com/cython/cython/issues/4500
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Run Builds
+        run: |
+          echo "::add-matcher::sources/nuttx/.github/gcc.json"
+          export ARTIFACTDIR=`pwd`/buildartifacts
+          cd sources/nuttx/tools/ci
+          ./cibuild.sh -i -c -A -R -S testlist/${{matrix.boards}}.dat
+
+      - uses: actions/upload-artifact@v6
+                if: ${{ always() }}
+        with:
+          name: macos-${{matrix.boards}}-builds
+          path: buildartifacts/
+        continue-on-error: true
