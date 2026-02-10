@@ -20,8 +20,8 @@ on:
 env:
    # REPO_NUTTX_NAME: trns1997/nuttx
    # REPO_NUTTX_NAME: Barto22/nuttx
-   REPO_NUTTX_NAME: apache/nuttx
-   REF_NUTTX_NAME: master
+   REPO_NUTTX_NAME: linguini1/nuttx
+   REF_NUTTX_NAME: loopspermsec
    # REPO_NUTTX_NAME: wangchdo/nuttx
    # REF_NUTTX_NAME: fix_clock_init
    # REF_NUTTX_NAME: add-missing-libcxxtoolchain-support
@@ -30,7 +30,7 @@ env:
    # REF_NUTTX_NAME: simbit18-rp2040
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
-   BOARD_CONFIG_NAME: mr-canhubk3:nsh
+   BOARD_CONFIG_NAME: sim:mount
    #BOARD_CONFIG_NAME: sim:nsh
    # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
    # BOARD_CONFIG_NAME: xmc4800-relax:nsh
