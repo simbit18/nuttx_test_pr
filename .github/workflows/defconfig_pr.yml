@@ -20,17 +20,18 @@ on:
 env:
    # REPO_NUTTX_NAME: trns1997/nuttx
    # REPO_NUTTX_NAME: Barto22/nuttx
-   REPO_NUTTX_NAME: arjav1528/nuttx
-   REF_NUTTX_NAME: dev-issue-16695
+   #REPO_NUTTX_NAME: arjav1528/nuttx
+   #REF_NUTTX_NAME: dev-issue-16695
    # REPO_NUTTX_NAME: wangchdo/nuttx
    # REF_NUTTX_NAME: fix_clock_init
    # REF_NUTTX_NAME: add-missing-libcxxtoolchain-support
    # REF_NUTTX_NAME: feature/fix-protected-build
-   # REPO_NUTTX_NAME: apache/nuttx
+   REPO_NUTTX_NAME: apache/nuttx
+   REF_NUTTX_NAME: master
    # REF_NUTTX_NAME: simbit18-rp2040
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
-   BOARD_CONFIG_NAME: stm32h745i-disco:nsh
+   BOARD_CONFIG_NAME: b-l072z-lrwan1:nxlines_oled
    #BOARD_CONFIG_NAME: sim:nsh
    # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
    # BOARD_CONFIG_NAME: xmc4800-relax:nsh
