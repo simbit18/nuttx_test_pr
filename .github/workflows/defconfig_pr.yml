@@ -28,15 +28,15 @@ env:
    # REF_NUTTX_NAME: feature/fix-protected-build
    # REPO_NUTTX_NAME: arjav1528/nuttx
    # REF_NUTTX_NAME: dev-issue-18311
-   REPO_NUTTX_NAME: apache/nuttx
-   REF_NUTTX_NAME: master
+   REPO_NUTTX_NAME: linguini1/nuttx
+   REF_NUTTX_NAME: xiao-nimble
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    # REF_NUTTX_NAME: simbit18-rp2040
    # REPO_APPS_NAME: Biancaa-R/nuttx-apps
    # REF_APPS_NAME: feature-ls-timestamp
    # BOARD_CONFIG_NAME: weact-stm32h750:nsh
-   BOARD_CONFIG_NAME: esp32c3-devkit:nimble
+   BOARD_CONFIG_NAME: esp32c3-xiao:nimble
    # BOARD_CONFIG_NAME: pimoroni-pico-2-plus:audiopack
    # BOARD_CONFIG_NAME: xmc4800-relax:nsh
    # BOARD_CONFIG_NAME: nucleo-f302r8:ihm07m1_b16
