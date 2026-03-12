@@ -28,8 +28,10 @@ env:
    # REF_NUTTX_NAME: feature/fix-protected-build
    # REPO_NUTTX_NAME: arjav1528/nuttx
    # REF_NUTTX_NAME: dev-issue-18311
-   REPO_NUTTX_NAME: mzanders/nuttx
-   REF_NUTTX_NAME: prevent_free_kthread_group
+   REPO_NUTTX_NAME: apache/nuttx
+   REF_NUTTX_NAME: master
+   # REPO_NUTTX_NAME: mzanders/nuttx
+   # REF_NUTTX_NAME: prevent_free_kthread_group
    REPO_APPS_NAME: apache/nuttx-apps
    REF_APPS_NAME: master
    # REF_NUTTX_NAME: simbit18-rp2040
