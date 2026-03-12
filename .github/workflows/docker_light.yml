@@ -38,17 +38,17 @@ jobs:
           REF="refs/heads/master"
           echo "Working with ref: $REF"
       - name: Checkout nuttx repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: simbit18/nuttx
-          ref: simbit18-waveshare
+          ref: simbit18-sh
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
         run: git -C sources/nuttx fetch --tags
 
       - name: Checkout apps repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: apache/nuttx-apps
           ref: master
@@ -59,7 +59,7 @@ jobs:
         run: tar zcf sources.tar.gz sources
 
       - name: Archive Source Bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: source-bundle
           path: sources.tar.gz
@@ -73,12 +73,12 @@ jobs:
       matrix:
         boards:
          [
-          "risc-v-02"
+          "arm-07", "arm-07", "arm-08", "arm-09", "arm-10", "arm-11", "arm-12", "arm-13", "arm-14"
          ]
 
     steps:
       - name: Download Source Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: source-bundle
           path: .
@@ -87,7 +87,7 @@ jobs:
         run: tar zxf sources.tar.gz
 
       - name: Docker Login
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -116,7 +116,7 @@ jobs:
                 ./cibuild.sh -c -A -N -R -S testlist/${{matrix.boards}}.dat
             fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.0
         if: ${{ always() }}
         with:
           name: linux-${{matrix.boards}}-builds
