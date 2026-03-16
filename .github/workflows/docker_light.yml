@@ -73,7 +73,7 @@ jobs:
       matrix:
         boards:
          [
-          "arm-07", "arm-07", "arm-08", "arm-09", "arm-10", "arm-11", "arm-12", "arm-13", "arm-14"
+          "arm-05", "arm-07", "arm-08", "arm-09", "arm-10", "arm-11", "arm-12", "arm-13", "arm-14"
          ]
 
     steps:
