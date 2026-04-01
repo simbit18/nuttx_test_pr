@@ -110,9 +110,7 @@ jobs:
           BLOBDIR: /tools/blobs
         with:
           run: |
-            echo "::add-matcher::sources/nuttx/.github/gcc.json"
             export ARTIFACTDIR=`pwd`/buildartifacts
-            export NTFCDIR=/github/workspace/nuttx-ntfc
 
             pip install ntfc==0.0.1
             mkdir /github/workspace/nuttx-ntfc
@@ -121,7 +119,9 @@ jobs:
             # get NTFC test cases
             cd external
             git clone -b release-0.0.1 https://github.com/szafonimateusz-mi/nuttx-testing
+            export NTFCDIR=/github/workspace/nuttx-ntfc
 
+            echo "::add-matcher::sources/nuttx/.github/gcc.json"
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx/tools/ci
