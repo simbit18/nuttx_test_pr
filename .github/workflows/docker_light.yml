@@ -124,7 +124,7 @@ jobs:
             echo "::add-matcher::sources/nuttx/.github/gcc.json"
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
-            cd sources/nuttx/tools/ci
+            cd /github/workspace/sources/nuttx/tools/ci
             if [ "X${{matrix.boards}}" = "Xcodechecker" ]; then
                 ./cibuild.sh -c -A -N -R --codechecker testlist/${{matrix.boards}}.dat
             else
