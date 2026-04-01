@@ -17,6 +17,11 @@ on:
   push:
     paths:
       - '.github/workflows/docker_light.yml'
+env:
+   REPO_NUTTX_NAME: apache/nuttx
+   REF_NUTTX_NAME: master
+   REPO_APPS_NAME: apache/nuttx-apps
+   REF_APPS_NAME: master
 
 permissions:
   contents: read
@@ -40,8 +45,8 @@ jobs:
       - name: Checkout nuttx repo
         uses: actions/checkout@v6
         with:
-          repository: simbit18/nuttx
-          ref: simbit18-bl602evb
+          repository: ${{ env.REPO_NUTTX_NAME }}
+          ref: ${{ env.REF_NUTTX_NAME }}
           path: sources/nuttx
           fetch-depth: 1
       - name: Checkout nuttx repo tags
@@ -50,8 +55,8 @@ jobs:
       - name: Checkout apps repo
         uses: actions/checkout@v6
         with:
-          repository: apache/nuttx-apps
-          ref: master
+          repository: ${{ env.REPO_APPS_NAME }}
+          ref: ${{ env.REF_APPS_NAME }}
           path: sources/apps
           fetch-depth: 1
 
@@ -59,7 +64,7 @@ jobs:
         run: tar zcf sources.tar.gz sources
 
       - name: Archive Source Bundle
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: source-bundle
           path: sources.tar.gz
@@ -73,12 +78,12 @@ jobs:
       matrix:
         boards:
          [
-          "risc-v-01"
+          "risc-v-01", "x86_64-01", "other"
          ]
 
     steps:
       - name: Download Source Artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: source-bundle
           path: .
@@ -107,6 +112,16 @@ jobs:
           run: |
             echo "::add-matcher::sources/nuttx/.github/gcc.json"
             export ARTIFACTDIR=`pwd`/buildartifacts
+            export NTFCDIR=/github/workspace/nuttx-ntfc
+
+            pip install ntfc==0.0.1
+            mkdir /github/workspace/nuttx-ntfc
+            mkdir /github/workspace/nuttx-ntfc/external
+            cd /github/workspace/nuttx-ntfc
+            # get NTFC test cases
+            cd external
+            git clone -b release-0.0.1 https://github.com/szafonimateusz-mi/nuttx-testing
+
             git config --global --add safe.directory /github/workspace/sources/nuttx
             git config --global --add safe.directory /github/workspace/sources/apps
             cd sources/nuttx/tools/ci
