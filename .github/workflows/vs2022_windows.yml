@@ -1,0 +1,125 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: Manually Compiling sim Windows VS2022 for test
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      repo-nuttx:
+        description: What's the name of the repository nuttx (e.g. userGH/nuttx)?
+        required: true
+        type: string
+
+      branch-nuttx:
+        description: What's the name of the nuttx branch (e.g. fix-nuttx)?
+        required: true
+        type: string
+
+      repo-apps:
+        description: What's the name of the repository nuttx-apps (e.g. userGH/nuttx-apps)?
+        required: true
+        type: string
+
+      branch-apps:
+        description: What's the name nuttx-apps branch (e.g. fix-apps)?
+        required: true
+        type: string
+
+concurrency:
+  group: build-man-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Fetch-Source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: View input parameters
+        shell: bash
+        run: |
+          echo "Nuttx repository: ${{ inputs.repo-nuttx }}"
+          echo "    Nuttx branch: ${{ inputs.branch-nuttx }}"
+          echo " Apps repository: ${{ inputs.repo-apps }}"
+          echo "     Apps branch: ${{ inputs.branch-apps }}"
+
+      - name: Determine Target Branches
+        id: gittargets
+        shell: bash
+        run: |
+          OS_REF=""
+          APPS_REF=""
+          REF="refs/heads/master"
+          echo "Working with ref: $REF"
+
+      - name: Checkout nuttx repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: ${{ inputs.repo-nuttx }}
+          ref: ${{ inputs.branch-nuttx }}
+          path: sources/nuttx
+          fetch-depth: 1
+
+      - name: Checkout apps repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: ${{ inputs.repo-apps }}
+          ref: ${{ inputs.branch-apps }}
+          path: sources/apps
+          fetch-depth: 1
+
+      - name: Tar sources
+        run: tar zcf sources.tar.gz sources
+
+      - name: Archive Source Bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: source-bundle
+          path: sources.tar.gz
+
+  build:
+    needs: Fetch-Source
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Set up Python and install kconfiglib
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+      - name: Install kconfiglib
+        run: |
+          pip install kconfiglib
+
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: |
+          7z x sources.tar.gz -y
+          7z x sources.tar -y -snld
+
+      - name: Run Builds
+        run: |
+          "ARTIFACTDIR=${{github.workspace}}\sources\buildartifacts" >> $env:GITHUB_ENV
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+          git config --global --add safe.directory ${{github.workspace}}\sources\nuttx
+          git config --global --add safe.directory ${{github.workspace}}\sources\apps
+          cd sources\nuttx
+          cmake -B build -DBOARD_CONFIG=sim:windows -G"Visual Studio 17 2022" -A Win32
+          cmake --build build
