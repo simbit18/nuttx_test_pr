@@ -1,0 +1,473 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: Manually build NuttX CI for test
+
+permissions:
+  contents: read
+
+env:
+   IMAGE_NAME: nuttx/nuttx-docker-testing
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      repo-nuttx:
+        description: What's the name of the repository nuttx (e.g. userGH/nuttx)?
+        required: true
+        type: string
+
+      branch-nuttx:
+        description: What's the name of the nuttx branch (e.g. fix-nuttx)?
+        required: true
+        type: string
+
+      repo-apps:
+        description: What's the name of the repository nuttx-apps (e.g. userGH/nuttx-apps)?
+        required: true
+        type: string
+
+      branch-apps:
+        description: What's the name nuttx-apps branch (e.g. fix-apps)?
+        required: true
+        type: string
+
+      jobs-arch:
+        description: Choose an architecture (Linux only)
+        type: choice
+        options:
+          - arm
+          - arm64
+          - other
+          - risc-v
+          - sim
+          - x86_64
+          - xtensa
+          - all
+        default: all
+
+      host-platform:
+        description: Choose a host platform
+        type: choice
+        options:
+          - linux
+          - macos
+          - msys2
+          - msvc
+          - all
+        default: all
+
+concurrency:
+  group: build-man-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Fetch-Source:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: View input parameters
+        shell: bash
+        run: |
+          echo "Nuttx repository: ${{ inputs.repo-nuttx }}"
+          echo "    Nuttx branch: ${{ inputs.branch-nuttx }}"
+          echo " Apps repository: ${{ inputs.repo-apps }}"
+          echo "     Apps branch: ${{ inputs.branch-apps }}"
+          echo "    Architecture: ${{ inputs.jobs-arch }}"
+          echo "   Host platform: ${{ inputs.host-platform }}"
+
+      - name: Checkout Matrix
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          path: sources
+ 
+      - name: Create JSON file
+        run: |
+          cat > sources/items.json << 'EOF'
+          [
+            "arm-01", "risc-v-01", "sim-01", "xtensa-01", "arm64-01", "x86_64-01", "other",
+            "arm-02", "risc-v-02", "sim-02", "xtensa-02",
+            "arm-03", "risc-v-03", "sim-03", "xtensa-03",
+            "arm-04", "risc-v-04",
+            "arm-05", "risc-v-05",
+            "arm-06", "risc-v-06",
+            "arm-07", "arm-08", "arm-09", "arm-10", "arm-11", "arm-12", "arm-13", "arm-14"
+          ]
+          EOF
+
+      - name: Find matching items
+        id: set-matrix
+        run: |
+          FILE="sources/items.json"
+          KEY="${{ github.event.inputs.jobs-arch || 'all' }}"
+          echo "Total items: $(jq 'length' "$FILE")"
+          echo $(jq '.' "$FILE")
+          echo "🔍 Searching for: $KEY"
+
+          case "${{ github.event.inputs.jobs-arch }}" in
+            all)
+              MATCHES=$(jq '[.[]]' "$FILE")
+              ;;
+            arm)
+              MATCHES=$(jq '[.[] | select(test("${{ github.event.inputs.jobs-arch }}-"))]' "$FILE")
+              ;;
+            *)
+              MATCHES=$(jq '[.[] | select(test("${{ github.event.inputs.jobs-arch }}"))]' "$FILE")
+              ;;
+          esac
+
+          COUNT=$(echo "$MATCHES" | jq 'length')
+          echo "Found $COUNT match(es):"
+          MATRIX=$(echo "$MATCHES" | jq -rc .)
+          echo "$MATRIX" | jq -rc '.'
+          # Export matrix for multiple jobs on Linux
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
+      - name: Determine Target Branches
+        id: gittargets
+        shell: bash
+        run: |
+          OS_REF=""
+          APPS_REF=""
+          REF="refs/heads/master"
+          echo "Working with ref: $REF"
+
+      - name: Checkout nuttx repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: ${{ inputs.repo-nuttx }}
+          ref: ${{ inputs.branch-nuttx }}
+          path: sources/nuttx
+          fetch-depth: 1
+
+      - name: Checkout apps repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: ${{ inputs.repo-apps }}
+          ref: ${{ inputs.branch-apps }}
+          path: sources/apps
+          fetch-depth: 1
+
+      - name: Replace repository
+        run: |
+          echo "Replace repository: ${{ env.IMAGE_NAME }}"
+          # nuttx/nuttx-docker-testing
+          sed -i 's#/apache/nuttx#/${{ env.IMAGE_NAME }}#g' sources/nuttx/.github/actions/ci-container/action.yaml
+
+      - name: Tar sources
+        run: tar zcf sources.tar.gz sources
+
+      - name: Archive Source Bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: source-bundle
+          path: sources.tar.gz
+
+  Linux:
+    if: ${{ inputs.host-platform  == 'linux' ||  inputs.host-platform == 'all' }}
+    needs: Fetch-Source
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 1
+
+    strategy:
+      fail-fast: false
+      matrix:
+        boards: ${{ fromJSON(needs.Fetch-Source.outputs.matrix) }}
+    steps:
+      - name: Show Disk Space
+        run: df -h
+
+      - name: Free Disk Space (Ubuntu)
+        run: |
+          sudo rm -rf /usr/local/lib/android
+
+      - name: After CLEAN-UP Disk Space
+        run: df -h
+
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Docker Login
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2  # v4.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Pull
+        run: docker pull ghcr.io/${{ env.IMAGE_NAME }}/apache-nuttx-ci-linux:latest
+
+      - name: Run builds
+        uses: ./sources/nuttx/.github/actions/ci-container
+        env:
+          BLOBDIR: /tools/blobs
+        with:
+          run: |
+            export ARTIFACTDIR=`pwd`/buildartifacts
+
+            pip install ntfc==0.0.1
+            mkdir /github/workspace/nuttx-ntfc
+            mkdir /github/workspace/nuttx-ntfc/external
+            cd /github/workspace/nuttx-ntfc
+            # get NTFC test cases
+            cd external
+            git clone -b release-0.0.1 https://github.com/szafonimateusz-mi/nuttx-testing
+            export NTFCDIR=/github/workspace/nuttx-ntfc
+
+            echo "::add-matcher::sources/nuttx/.github/gcc.json"
+            git config --global --add safe.directory /github/workspace/sources/nuttx
+            git config --global --add safe.directory /github/workspace/sources/apps
+            cd /github/workspace/sources/nuttx/tools/ci
+            ( sleep 7200 ; echo Killing pytest after timeout... ; pkill -f pytest )&
+            ./cibuild.sh -c -A -N -R -S testlist/${{matrix.boards}}.dat
+
+      - name: Post-build Disk Space
+        if: always()
+        run: df -h
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: ${{ always() }}
+        with:
+          name: ${{ github.job }}-${{matrix.boards}}-builds
+          path: buildartifacts/
+        continue-on-error: true
+
+  # Test the out-of-tree build
+  OOT-Build:
+    needs: Linux
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Docker Login
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2  # v4.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Export NuttX Repo SHA
+        run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+
+      - name: Run Out-of-Tree Build Test
+        uses: ./sources/nuttx/.github/actions/ci-container
+        env:
+          BLOBDIR: /tools/blobs
+        with:
+          run: |
+            echo "::add-matcher::sources/nuttx/.github/gcc.json"
+            git config --global --add safe.directory /github/workspace/sources/nuttx
+            git config --global --add safe.directory /github/workspace/sources/apps
+            cd sources/nuttx
+            ./tools/ci/cibuild-oot.sh
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: ${{ always() }}
+        with:
+          name: ${{ github.job }}-artifacts
+          path: sources/apps/testing/cxx-oot-build
+        continue-on-error: true
+
+  # Run the selected macOS Builds
+  macOS:
+    if: ${{ inputs.host-platform == 'macos' || inputs.host-platform == 'all' }}
+    needs: Fetch-Source
+    runs-on: macos-15-intel
+    strategy:
+      fail-fast: false
+      matrix:
+        boards: ["macos", "sim-01", "sim-02", "sim-03"]
+    steps:
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Restore Tools Cache
+        id: cache-tools
+        uses: actions/cache@v5
+        env:
+          cache-name: ${{ github.job }}-cache-tools
+        with:
+          path: ./sources/tools
+          key: ${{ github.job }}-tools-${{ hashFiles('./sources/nuttx/tools/ci/platforms/darwin.sh') }}
+
+      - name: Export NuttX Repo SHA
+        run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+
+      # Released version of Cython has issues with Python 11. Set runner to use Python 3.10
+      # https://github.com/cython/cython/issues/4500
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Run Builds
+        run: |
+          echo "::add-matcher::sources/nuttx/.github/gcc.json"
+          export ARTIFACTDIR=`pwd`/buildartifacts
+          cd sources/nuttx/tools/ci
+          ./cibuild.sh -i -c -A -R testlist/${{matrix.boards}}.dat
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: ${{ github.job }}-${{matrix.boards}}-builds
+          path: buildartifacts/
+        continue-on-error: true
+
+  # Run the selected msys2 Builds
+  msys2:
+    if: ${{ inputs.host-platform == 'msys2' || inputs.host-platform == 'all' }}
+    needs: Fetch-Source
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        boards: ["msys2"]
+
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: false
+          install: >-
+            base-devel
+            gcc
+            gperf
+            automake
+            autoconf
+            git
+            python3
+            ncurses-devel
+            unzip
+            zip
+            tio
+            zlib-devel
+            cmake
+            ninja
+            python-pip
+            vim
+            genromfs
+
+      - name: pip3 install
+        run: |
+          python3 -m venv --system-site-packages /usr/local
+          pip3 install --root-user-action=ignore --no-cache-dir pyelftools cxxfilt kconfiglib
+
+      - run: git config --global core.autocrlf false
+
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: tar zxf sources.tar.gz
+
+      - name: Restore Tools Cache
+        id: cache-tools
+        uses: actions/cache@v5
+        env:
+          cache-name: ${{ github.job }}-cache-tools
+        with:
+          path: ./sources/tools
+          key: ${{ github.job }}-tools-${{ hashFiles('./sources/nuttx/tools/ci/platforms/msys2.sh') }}
+
+      - name: Export NuttX Repo SHA
+        run: echo "nuttx_sha=`git -C sources/nuttx rev-parse HEAD`" >> $GITHUB_ENV
+
+      - name: Run Builds
+        run: |
+          echo "::add-matcher::sources/nuttx/.github/gcc.json"
+          export ARTIFACTDIR=`pwd`/buildartifacts
+          git config --global --add safe.directory /github/workspace/sources/nuttx
+          git config --global --add safe.directory /github/workspace/sources/apps
+          cd sources/nuttx/tools/ci
+          ./cibuild.sh -g -i -A -C -N -R testlist/${{matrix.boards}}.dat
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: ${{ github.job }}-${{matrix.boards}}-builds
+          path: buildartifacts/
+        continue-on-error: true
+
+  # Build with MSVC in Windows native
+  msvc:
+    if: ${{ inputs.host-platform == 'msvc' || inputs.host-platform == 'all' }}
+    needs: Fetch-Source
+    strategy:
+      fail-fast: false
+      matrix:
+        boards: ["windows"]
+
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Set up Python and install kconfiglib
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+      - name: Install kconfiglib
+        run: |
+          pip install kconfiglib
+
+      - name: Download Source Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: source-bundle
+          path: .
+
+      - name: Extract sources
+        run: |
+          7z x sources.tar.gz -y
+          7z x sources.tar -y -snld
+
+      - name: Run Builds
+        run: |
+          "ARTIFACTDIR=${{github.workspace}}\sources\buildartifacts" >> $env:GITHUB_ENV
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+          git config --global --add safe.directory ${{github.workspace}}\sources\nuttx
+          git config --global --add safe.directory ${{github.workspace}}\sources\apps
+          cd sources\nuttx\tools\ci
+          .\cibuild.ps1 -n -i -A -C -N testlist\${{matrix.boards}}.dat
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: ${{ github.job }}-${{matrix.boards}}-builds
+          path: ./sources/buildartifacts/
+        continue-on-error: true

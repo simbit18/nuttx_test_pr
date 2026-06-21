@@ -142,7 +142,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker Pull
-        run: docker pull ghcr.io/apache/nuttx/apache-nuttx-ci-linux:latest
+        run: docker pull ghcr.io/${{ env.IMAGE_NAME }}/apache-nuttx-ci-linux:latest
 
       - name: Run builds
         uses: ./sources/nuttx/.github/actions/ci-container
