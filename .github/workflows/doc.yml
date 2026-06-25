@@ -105,7 +105,6 @@ jobs:
       - name: Extract sources
         run: tar zxf sources.tar.gz
 
-      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
