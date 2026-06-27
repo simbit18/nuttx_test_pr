@@ -110,9 +110,9 @@ jobs:
           python-version: '3.10'
       - name: Generate Documentation
         run: |
-          export ARTIFACTDIR=`pwd`/buildartifacts
+          export ARTIFACTDIR=`pwd`/buildartifacts/_build
           echo "ARTIFACTDIR: $ARTIFACTDIR"
-          $artifactconfigdir=$ARTIFACTDIR/$(echo "_build" | sed "s/:/\//")/
+          $artifactconfigdir=$ARTIFACTDIR
           echo "artifactconfigdir: $artifactconfigdir"
           mkdir -p $artifactconfigdir
           cd sources/nuttx/Documentation/
