@@ -110,16 +110,21 @@ jobs:
           python-version: '3.10'
       - name: Generate Documentation
         run: |
+          export ARTIFACTDIR=`pwd`/buildartifacts
           cd sources/nuttx/Documentation/
           sudo apt update
           sudo apt install plantuml
           pip3 install pipenv
           pipenv install
           pipenv run make html
-
+          $artifactconfigdir=$ARTIFACTDIR/_build/
+          echo "artifactconfigdir: $artifactconfigdir"
+          mkdir -p $artifactconfigdir
+          cp -r _build/ $artifactconfigdir/
+          
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: sphinx-docs
           path: |
-            Documentation/_build/html/
-            Documentation/_build/latex/*.pdf
+            buildartifacts/html/
+            buildartifacts/latex/*.pdf
