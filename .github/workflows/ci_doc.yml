@@ -69,7 +69,7 @@ jobs:
         with:
           python-version: '3.8'
       - name: Build docs
-        run: |
+      - run: |
           echo "======================================================="
           echo " Install Pipenv"
           echo "======================================================="
@@ -98,17 +98,6 @@ jobs:
           echo " Select nuttx/Documentation version candidates"
           echo "======================================================="
 
-        # NUTTX_TAGS=$(git tag -l --sort=taggerdate 'nuttx-1?.*' | fgrep -v RC)
-        # export NUTTX_VERSIONS=$(echo -n "$NUTTX_TAGS" | sed -r 's|^nuttx-||g' | tr '\n' ',')
-        
-        # echo " ==> BUILD NUTTX DOCUMENTATION FOR: $NUTTX_VERSIONS (and master)."
-
-        # for nuttx_version in $NUTTX_TAGS master; do
-
-          # echo " ===> BUILDING DOCUMENTATION FOR NuttX $nuttx_version."
-
-          # git checkout -f $nuttx_version
-
           # NuttX uses Sphinx as documentation generator. Sphinx needs Python.
           # Sphinx may have different dependencies for different NuttX release.
           # Manage Python packages with PipEnv per release deinfed in Pipfile.
@@ -117,7 +106,7 @@ jobs:
           pipenv install
 
           #if [ "$nuttx_version" = "master" ]; then
-            OUTDIR="$DOCDIR/latest"
+          OUTDIR="$DOCDIR/latest"
           #else
           #  OUTDIR="$DOCDIR/${nuttx_version#nuttx-}"
           #fi
