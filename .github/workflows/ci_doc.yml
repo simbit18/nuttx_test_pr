@@ -130,11 +130,11 @@ jobs:
           # Clear caches (pipenv, pip)
           pipenv --clear install
 
-        # done
+          # done
 
-        cd ../..
+          cd ../..
 
-        echo  " ========== DOCUMENTATION BUILD FINISHED ==========="
+          echo  " ========== DOCUMENTATION BUILD FINISHED ==========="
 
       - uses: actions/upload-artifact@v7.0.1
         with:
