@@ -1,0 +1,155 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+---
+name: "CI Manually Build Documentation"
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      repo-nuttx:
+        description: What's the name of the repository nuttx (e.g. userGH/nuttx)?
+        required: true
+        type: string
+
+      branch-nuttx:
+        description: What's the name of the nuttx branch (e.g. fix-nuttx)?
+        required: true
+        type: string
+
+concurrency:
+  group: build-man-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Fetch-Source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: View input parameters
+        shell: bash
+        run: |
+          echo "Nuttx repository: ${{ inputs.repo-nuttx }}"
+          echo "    Nuttx branch: ${{ inputs.branch-nuttx }}"
+
+      - name: Determine Target Branches
+        id: gittargets
+        shell: bash
+        run: |
+          OS_REF=""
+          APPS_REF=""
+          REF="refs/heads/master"
+          echo "Working with ref: $REF"
+
+    - name: Checkout Site
+      uses: actions/checkout@v7
+    - run: |
+        git fetch --prune --unshallow
+
+    - name: Checkout NuttX repo
+      uses: actions/checkout@v7
+      with:
+        repository: ${{ inputs.repo-nuttx }}"
+        fetch-depth: 0
+        ref: master
+        path: nuttx
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+    - name: Build docs
+      run: |
+        echo "======================================================="
+        echo " Install Pipenv"
+        echo "======================================================="
+
+        python3 -m venv .venv
+        source .venv/bin/activate
+        export PIPENV_VERBOSITY=-1
+        pip3 install pipenv
+        
+        echo "======================================================="
+        echo " Install PlantUML"
+        echo "======================================================="
+
+        sudo apt update
+        sudo apt install plantuml
+
+        echo "======================================================="
+        echo " Setup nuttx/Documentation"
+        echo "======================================================="
+
+        cd nuttx/Documentation
+        DOCDIR=../../docs
+        rm -rf $DOCDIR
+
+        echo "======================================================="
+        echo " Select nuttx/Documentation version candidates"
+        echo "======================================================="
+
+        # NUTTX_TAGS=$(git tag -l --sort=taggerdate 'nuttx-1?.*' | fgrep -v RC)
+        # export NUTTX_VERSIONS=$(echo -n "$NUTTX_TAGS" | sed -r 's|^nuttx-||g' | tr '\n' ',')
+        
+        # echo " ==> BUILD NUTTX DOCUMENTATION FOR: $NUTTX_VERSIONS (and master)."
+
+        # for nuttx_version in $NUTTX_TAGS master; do
+
+          # echo " ===> BUILDING DOCUMENTATION FOR NuttX $nuttx_version."
+
+          # git checkout -f $nuttx_version
+
+          # NuttX uses Sphinx as documentation generator. Sphinx needs Python.
+          # Sphinx may have different dependencies for different NuttX release.
+          # Manage Python packages with PipEnv per release deinfed in Pipfile.
+          echo " ====> PIPENV INSTALL."
+
+          pipenv install
+
+          #if [ "$nuttx_version" = "master" ]; then
+            OUTDIR="$DOCDIR/latest"
+          #else
+          #  OUTDIR="$DOCDIR/${nuttx_version#nuttx-}"
+          #fi
+
+          echo " ====> OUTDIR IS: $OUTDIR."
+
+          echo " ====> STARTING SPHINX BUILD."
+
+          pipenv run make html BUILDDIR="$OUTDIR"
+
+          echo " ====> COPY RESULTS."
+
+          mv $OUTDIR/html/* $OUTDIR
+
+          echo " ====> BUILD LOCATION CLEANUP."
+
+          rm -rf $OUTDIR/{html,doctrees}
+
+          echo " ====> PIPENV CLEANUP."
+
+          # Clear caches (pipenv, pip)
+          pipenv --clear install
+
+        # done
+
+        cd ../..
+
+        echo  " ========== DOCUMENTATION BUILD FINISHED ==========="
+
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: sphinx-docs
+          path: |
+            buildartifacts/html/
+            buildartifacts/latex/*.pdf
