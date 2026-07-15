@@ -61,7 +61,7 @@ jobs:
       - name: Checkout NuttX repo
         uses: actions/checkout@v7
         with:
-          repository: ${{ inputs.repo-nuttx }}"
+          repository: ${{ inputs.repo-nuttx }}
           fetch-depth: 0
           ref: master
           path: nuttx
