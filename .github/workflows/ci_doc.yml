@@ -53,50 +53,50 @@ jobs:
           REF="refs/heads/master"
           echo "Working with ref: $REF"
 
-    - name: Checkout Site
-      uses: actions/checkout@v7
-    - run: |
-        git fetch --prune --unshallow
+      - name: Checkout Site
+        uses: actions/checkout@v7
+      - run: |
+          git fetch --prune --unshallow
 
-    - name: Checkout NuttX repo
-      uses: actions/checkout@v7
-      with:
-        repository: ${{ inputs.repo-nuttx }}"
-        fetch-depth: 0
-        ref: master
-        path: nuttx
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-    - name: Build docs
-      run: |
-        echo "======================================================="
-        echo " Install Pipenv"
-        echo "======================================================="
+      - name: Checkout NuttX repo
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ inputs.repo-nuttx }}"
+          fetch-depth: 0
+          ref: master
+          path: nuttx
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      - name: Build docs
+        run: |
+          echo "======================================================="
+          echo " Install Pipenv"
+          echo "======================================================="
 
-        python3 -m venv .venv
-        source .venv/bin/activate
-        export PIPENV_VERBOSITY=-1
-        pip3 install pipenv
-        
-        echo "======================================================="
-        echo " Install PlantUML"
-        echo "======================================================="
+          python3 -m venv .venv
+          source .venv/bin/activate
+          export PIPENV_VERBOSITY=-1
+          pip3 install pipenv
 
-        sudo apt update
-        sudo apt install plantuml
+          echo "======================================================="
+          echo " Install PlantUML"
+          echo "======================================================="
 
-        echo "======================================================="
-        echo " Setup nuttx/Documentation"
-        echo "======================================================="
+          sudo apt update
+          sudo apt install plantuml
 
-        cd nuttx/Documentation
-        DOCDIR=../../docs
-        rm -rf $DOCDIR
+          echo "======================================================="
+          echo " Setup nuttx/Documentation"
+          echo "======================================================="
 
-        echo "======================================================="
-        echo " Select nuttx/Documentation version candidates"
-        echo "======================================================="
+          cd nuttx/Documentation
+          DOCDIR=../../docs
+          rm -rf $DOCDIR
+
+          echo "======================================================="
+          echo " Select nuttx/Documentation version candidates"
+          echo "======================================================="
 
         # NUTTX_TAGS=$(git tag -l --sort=taggerdate 'nuttx-1?.*' | fgrep -v RC)
         # export NUTTX_VERSIONS=$(echo -n "$NUTTX_TAGS" | sed -r 's|^nuttx-||g' | tr '\n' ',')
