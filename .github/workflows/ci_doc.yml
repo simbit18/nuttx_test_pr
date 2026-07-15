@@ -69,7 +69,7 @@ jobs:
         with:
           python-version: '3.8'
       - name: Build docs
-      - run: |
+        run: |
           echo "======================================================="
           echo " Install Pipenv"
           echo "======================================================="
