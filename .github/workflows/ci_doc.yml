@@ -35,7 +35,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  Fetch-Source:
     runs-on: ubuntu-latest
     steps:
       - name: View input parameters
