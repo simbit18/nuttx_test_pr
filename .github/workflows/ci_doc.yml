@@ -89,6 +89,7 @@ jobs:
           echo "======================================================="
           echo " Setup nuttx/Documentation"
           echo "======================================================="
+          ls
 
           cd nuttx/Documentation
           DOCDIR=../../docs
@@ -112,13 +113,13 @@ jobs:
           #else
           #  OUTDIR="$DOCDIR/${nuttx_version#nuttx-}"
           #fi
-
+          mkdir -p $OUTDIR
           echo " ====> OUTDIR IS: $OUTDIR."
 
           echo " ====> STARTING SPHINX BUILD."
 
-          pipenv run make html BUILDDIR="$OUTDIR"
-
+          # pipenv run make html BUILDDIR="$OUTDIR"
+          pipenv run make html
           echo " ====> COPY RESULTS."
 
           mv $OUTDIR/html/* $OUTDIR
