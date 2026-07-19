@@ -44,19 +44,10 @@ jobs:
           echo "Nuttx repository: ${{ inputs.repo-nuttx }}"
           echo "    Nuttx branch: ${{ inputs.branch-nuttx }}"
 
-      - name: Determine Target Branches
-        id: gittargets
-        shell: bash
-        run: |
-          OS_REF=""
-          APPS_REF=""
-          REF="refs/heads/master"
-          echo "Working with ref: $REF"
-
-      - name: Checkout Site
-        uses: actions/checkout@v7
-      - run: |
-          git fetch --prune --unshallow
+      # - name: Checkout Site
+        # uses: actions/checkout@v7
+      # - run: |
+          # git fetch --prune --unshallow
 
       - name: Checkout NuttX repo
         uses: actions/checkout@v7
@@ -114,19 +105,24 @@ jobs:
           #  OUTDIR="$DOCDIR/${nuttx_version#nuttx-}"
           #fi
           mkdir -p $OUTDIR
+          BUILDTMPDIR="$DOCDIR/buildtmp"
+
           echo " ====> OUTDIR IS: $OUTDIR."
 
           echo " ====> STARTING SPHINX BUILD."
 
           # pipenv run make html BUILDDIR="$OUTDIR"
-          pipenv run make html
+          pipenv run make html BUILDDIR="$BUILDTMPDIR"
+
           echo " ====> COPY RESULTS."
 
-          mv $OUTDIR/html/* $OUTDIR
+          mv $BUILDTMPDIR/html/* $OUTDIR
 
           echo " ====> BUILD LOCATION CLEANUP."
 
-          rm -rf $OUTDIR/{html,doctrees}
+          ls -a $BUILDTMPDIR
+
+          rm -rf $BUILDTMPDIR
 
           echo " ====> PIPENV CLEANUP."
 
