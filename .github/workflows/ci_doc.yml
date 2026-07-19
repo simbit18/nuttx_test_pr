@@ -100,7 +100,7 @@ jobs:
           echo "======================================================="
           echo " ===> BUILDING DOCUMENTATION FOR NuttX $nuttx_version."
 
-          git checkout -f  ${{ inputs.branch-nuttx }}
+          # git checkout -f  ${{ inputs.branch-nuttx }}
           # NuttX uses Sphinx as documentation generator. Sphinx needs Python.
           # Sphinx may have different dependencies for different NuttX release.
           # Manage Python packages with PipEnv per release deinfed in Pipfile.
